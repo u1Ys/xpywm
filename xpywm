@@ -261,13 +261,16 @@ def cursor_set(cls, client=None):
         os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
     def cursor_set(_bool):
-        # this line is needed (?) for unknown reason -u1 [2019/10/22]
-        client.display.xfixes_query_version()
+        display = client.display
         window = client.screen.root
+        # this line is needed due to unknown reason -u1 [2019/10/22]
+        display.xfixes_query_version()
         if _bool:
             window.xfixes_show_cursor()
         else:
             window.xfixes_hide_cursor()
+        # Also -u1 [2019/10/22]
+        display.xfixes_query_version()
 
     m = re.search(r'rxvt|emacs', cls.lower())
     touchpad_set(bool(not(m)))
