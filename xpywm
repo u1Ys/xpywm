@@ -256,16 +256,25 @@ def backlight_toggle(brightness_a, brightness_b):
                      else brightness_a
     os.system(f'backlight -set {brightness_new}')
 
-def _touchpad_set(enable):
-    val = 0 if enable is True \
-          else 1
-    os.system(f'synclient TouchpadOff={val}')
+def cursor_set(cls, client=None):
+    def touchpad_set(_bool):
+        os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
-def touchpad_set(cls):
+    def cursor_set(_bool):
+        # this line is needed (?) for unknown reason -u1 [2019/10/22]
+        client.display.xfixes_query_version()
+        window = client.screen.root
+        if _bool:
+            window.xfixes_show_cursor()
+        else:
+            window.xfixes_hide_cursor()
+
     m = re.search(r'rxvt|emacs', cls.lower())
-    _touchpad_set(bool(not(m)))
+    touchpad_set(bool(not(m)))
+    if client is not None:
+        cursor_set(not(m))
 
-def screeshot(window='root'):
+def screenshot(window='root'):
     os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
 
 class Geometry:
@@ -294,7 +303,7 @@ class WindowManager():
         self.geometries = {}
         self.last_focused_window = None
         self.last_raised_window = None
-        self.last_vscreen = None
+        self.last_vscreen = min(1, MAX_VSCREEN)
 
         self.drag_window = None
         self.drag_button = None
@@ -560,7 +569,7 @@ class WindowManager():
             return
         
         cls = self.get_window_class(window)
-        touchpad_set(cls)
+        cursor_set(cls, client=self)
 
         # FIXME: called two times? might be redundant
         debug('focus_window: %s', self.window_shortname(window))
@@ -711,7 +720,7 @@ class WindowManager():
         if 'mplayer' in cls.lower():
             return True
         name = self.get_window_name(window)
-        return re.search(r'ニコニコ動画|ニコニコ生放送|youtube|twitch|abema|openrec|amazonprime|動画再生', \
+        return re.search(r'ニコニコ動画|ニコニコ生放送|youtube|twitch|abema|openrec|prime|動画再生', \
                          name.lower())
 
     def is_browser_window(self, window):
@@ -888,7 +897,7 @@ class WindowManager():
 
     def cb_screenshot(self, event):
         window = event.child
-        screeshot(window.id)
+        screenshot(window.id)
 
     def cb_toogle_last_vscreen(self, event):
         self.select_vscreen(self.last_vscreen)
