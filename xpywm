@@ -261,15 +261,15 @@ def cursor_set(cls, client=None):
         os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
     def cursor_set(_bool):
+        "Hide/show cursor (True/False)"
         display = client.display
         window = client.screen.root
-        # this line is needed due to unknown reason -u1 [2019/10/22]
-        display.xfixes_query_version()
         if _bool:
             window.xfixes_show_cursor()
         else:
             window.xfixes_hide_cursor()
-        # Also -u1 [2019/10/22]
+        # This line is needed due to unknown reason (for flush? for
+        # initialization?) -u1 [2019/10/22]
         display.xfixes_query_version()
 
     m = re.search(r'rxvt|emacs', cls.lower())
