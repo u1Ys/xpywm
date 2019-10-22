@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#       $Id: xpywm,v 1.16 2019/09/25 00:40:32 u1 Exp u1 $
+#       $Id: xpywm,v 1.17 2019/10/22 08:20:14 u1 Exp u1 $
 
 import os
 import re
@@ -261,16 +261,15 @@ def cursor_set(cls, client=None):
         os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
     def cursor_set(_bool):
-        "Hide/show cursor (True/False)"
         display = client.display
         window = client.screen.root
+        # Have to execute it due to unknown reason -u1 [2019/10/22]
+        display.xfixes_query_version()
         if _bool:
             window.xfixes_show_cursor()
         else:
             window.xfixes_hide_cursor()
-        # This line is needed due to unknown reason (for flush? for
-        # initialization?) -u1 [2019/10/22]
-        display.xfixes_query_version()
+        display.flush()
 
     m = re.search(r'rxvt|emacs', cls.lower())
     touchpad_set(bool(not(m)))
