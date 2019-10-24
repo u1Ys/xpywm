@@ -256,25 +256,28 @@ def backlight_toggle(brightness_a, brightness_b):
                      else brightness_a
     os.system(f'backlight -set {brightness_new}')
 
+def show_cursor(_bool, client=None):
+    if client is None:
+        return
+    display = client.display
+    window = client.screen.root
+    # Have to execute it due to unknown reason -u1 [2019/10/22]
+    display.xfixes_query_version()
+    if _bool:
+        window.xfixes_show_cursor()
+    else:
+        window.xfixes_hide_cursor()
+    display.flush()
+
 def cursor_set(cls, client=None):
-    def touchpad_set(_bool):
+    def touchpad_is(_bool):
         os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
-    def cursor_set(_bool):
-        display = client.display
-        window = client.screen.root
-        # Have to execute it due to unknown reason -u1 [2019/10/22]
-        display.xfixes_query_version()
-        if _bool:
-            window.xfixes_show_cursor()
-        else:
-            window.xfixes_hide_cursor()
-        display.flush()
-
     m = re.search(r'rxvt|emacs', cls.lower())
-    touchpad_set(bool(not(m)))
-    if client is not None:
-        cursor_set(not(m))
+    touchpad_is(bool(not(m)))
+    # # enable showing cursor in emacs for doc-annotate mode -u1 [2019/10/23]
+    # m = re.search(r'rxvt', cls.lower())
+    show_cursor(not(m), client)
 
 def screenshot(window='root'):
     os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
