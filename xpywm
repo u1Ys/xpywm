@@ -256,18 +256,24 @@ def backlight_toggle(brightness_a, brightness_b):
                      else brightness_a
     os.system(f'backlight -set {brightness_new}')
 
+# hold/check last command, because it seems xfixes_hide_cursor
+# instuction is stacked. (If X times execute xfixes_hide_cursor, X
+# times exexutoin of xfixes_show_cursor is need to show cursor) -u1
+# [2019/10/28]
+last_cmd = None
 def show_cursor(_bool, client=None):
-    if client is None:
-        return
+    global last_cmd
+    if client is None or last_cmd == _bool:
+            return
     display = client.display
     window = client.screen.root
-    # Have to execute it due to unknown reason -u1 [2019/10/22]
     display.xfixes_query_version()
     if _bool:
         window.xfixes_show_cursor()
     else:
-        window.xfixes_hide_cursor()
+        window.xfixes_hide_cursor()            
     display.flush()
+    last_cmd = _bool
 
 def cursor_set(cls, client=None):
     def touchpad_is(_bool):
@@ -275,8 +281,6 @@ def cursor_set(cls, client=None):
 
     m = re.search(r'rxvt|emacs', cls.lower())
     touchpad_is(bool(not(m)))
-    # # enable showing cursor in emacs for doc-annotate mode -u1 [2019/10/23]
-    # m = re.search(r'rxvt', cls.lower())
     show_cursor(not(m), client)
 
 def screenshot(window='root'):
