@@ -292,13 +292,13 @@ sc = ShowCursor()
 def toggle_show_cursor(client):
     sc.toggle_show_cursor(client)
 
-def cursor_set(cls, client=None):
+def cursor_set(cls, client):
     def touchpad_is(_bool):
         os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
     m = re.search(r'rxvt|emacs', cls.lower())
-    touchpad_is(not(m))
-    sc.show_cursor(not(m),client)
+    touchpad_is(not m)
+    sc.show_cursor(not m,client)
 
 def screenshot(window='root'):
     os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
