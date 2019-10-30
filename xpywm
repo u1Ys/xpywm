@@ -268,14 +268,15 @@ class ShowCursor():
         self.last_cmd = None
         self.always_show_cursor = False
 
-    def show_cursor(self, _bool, client=None):
-        if client is None:
-            return
+    def show_cursor(self, _bool, client):
         _bool = self.always_show_cursor or _bool
         if self.last_cmd == _bool:
             return
-        display = client.display
-        window = client.screen.root
+        try:
+            display = client.display
+            window = client.screen.root
+        except AttributeError:
+            return
         display.xfixes_query_version()
         if _bool:
             window.xfixes_show_cursor()
@@ -284,13 +285,13 @@ class ShowCursor():
         display.flush()
         self.last_cmd = _bool
 
-    def toggle_show_cursor(self, client):
-        self.always_show_cursor = not(self.always_show_cursor)
+    def toggle_always_show_cursor(self, client):
+        self.always_show_cursor = not self.always_show_cursor
         self.show_cursor(self.always_show_cursor, client)
 
 sc = ShowCursor()
 def toggle_show_cursor(client):
-    sc.toggle_show_cursor(client)
+    sc.toggle_always_show_cursor(client)
 
 def cursor_set(cls, client):
     def touchpad_is(_bool):
