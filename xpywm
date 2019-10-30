@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#       $Id: xpywm,v 1.17 2019/10/22 08:20:14 u1 Exp u1 $
+#       $Id: xpywm,v 1.18 2019/10/30 01:23:43 u1 Exp u1 $
 
 import os
 import re
@@ -130,6 +130,9 @@ KEYBOARD_HANDLER = {
     'bracketright': {
         'modifier': X.Mod1Mask | X.ControlMask, 'function': 'trace'
     },
+    'f': {'modifier': X.Mod1Mask | X.ControlMask, 'callback': True,
+          'method': 'cb_show_cursor',
+    },
 }
 
 KEYSYM_TBL = {
@@ -256,32 +259,46 @@ def backlight_toggle(brightness_a, brightness_b):
                      else brightness_a
     os.system(f'backlight -set {brightness_new}')
 
-# hold/check last command, because it seems xfixes_hide_cursor
-# instuction is stacked. (If X times execute xfixes_hide_cursor, X
-# times exexutoin of xfixes_show_cursor is need to show cursor) -u1
-# [2019/10/28]
-last_cmd = None
-def show_cursor(_bool, client=None):
-    global last_cmd
-    if client is None or last_cmd == _bool:
+class ShowCursor():
+    def __init__(self):
+        # hold/check last command, because it seems xfixes_hide_cursor
+        # instuction is stacked. (If X times execute
+        # xfixes_hide_cursor, X times exexutoin of xfixes_show_cursor
+        # is need to show cursor) -u1 [2019/10/28]
+        self.last_cmd = None
+        self.always_show_cursor = False
+
+    def show_cursor(self, _bool, client=None):
+        if client is None:
             return
-    display = client.display
-    window = client.screen.root
-    display.xfixes_query_version()
-    if _bool:
-        window.xfixes_show_cursor()
-    else:
-        window.xfixes_hide_cursor()            
-    display.flush()
-    last_cmd = _bool
+        _bool = self.always_show_cursor or _bool
+        if self.last_cmd == _bool:
+            return
+        display = client.display
+        window = client.screen.root
+        display.xfixes_query_version()
+        if _bool:
+            window.xfixes_show_cursor()
+        else:
+            window.xfixes_hide_cursor()            
+        display.flush()
+        self.last_cmd = _bool
+
+    def toggle_show_cursor(self, client):
+        self.always_show_cursor = not(self.always_show_cursor)
+        self.show_cursor(self.always_show_cursor, client)
+
+sc = ShowCursor()
+def toggle_show_cursor(client):
+    sc.toggle_show_cursor(client)
 
 def cursor_set(cls, client=None):
     def touchpad_is(_bool):
         os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
 
     m = re.search(r'rxvt|emacs', cls.lower())
-    touchpad_is(bool(not(m)))
-    show_cursor(not(m), client)
+    touchpad_is(not(m))
+    sc.show_cursor(not(m),client)
 
 def screenshot(window='root'):
     os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
@@ -910,6 +927,9 @@ class WindowManager():
 
     def cb_toogle_last_vscreen(self, event):
         self.select_vscreen(self.last_vscreen)
+
+    def cb_show_cursor(self, event):
+        toggle_show_cursor(self)
 
     # ---------------- event handlers
     def handle_keypress(self, event):
