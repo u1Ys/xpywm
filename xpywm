@@ -20,6 +20,7 @@ BOUNCE_RATIO = 1 / 8
 MAX_VSCREEN = 3
 TRANSSET_ALPHA = '.85'
 PY_SENDSCREEN_W, PY_SENDSCREEN_H = 800, 600
+STOP_CURSOR_CLS = r'rxvt|emacs|mupdf'
 
 EVENT_HANDLER = {
     X.KeyPress: 'handle_keypress',
@@ -37,6 +38,10 @@ EVENT_HANDLER = {
 
 KEYBOARD_HANDLER = {
     'i':
+    {'modifier': X.Mod1Mask | X.ControlMask, 'callback': True,
+     'method': 'cb_method', 'args': ('focus_n_p_window', 1)},
+    # also map to 'c' for one-handed control -u1 [2019/10/31]
+    'b':
     {'modifier': X.Mod1Mask | X.ControlMask, 'callback': True,
      'method': 'cb_method', 'args': ('focus_n_p_window', 1)},
     'o':
@@ -265,12 +270,12 @@ class ShowCursor():
         # instuction is stacked. (If X times execute
         # xfixes_hide_cursor, X times exexutoin of xfixes_show_cursor
         # is need to show cursor) -u1 [2019/10/28]
-        self.last_cmd = None
-        self.always_show_cursor = False
+        self._last_cmd = None
+        self._always_show_cursor = False
 
     def show_cursor(self, _bool, client):
-        _bool = self.always_show_cursor or _bool
-        if self.last_cmd == _bool:
+        _bool = self._always_show_cursor or _bool
+        if self._last_cmd == _bool:
             return
         try:
             display = client.display
@@ -281,13 +286,14 @@ class ShowCursor():
         if _bool:
             window.xfixes_show_cursor()
         else:
-            window.xfixes_hide_cursor()            
+            window.xfixes_hide_cursor()
         display.flush()
-        self.last_cmd = _bool
+        self._last_cmd = _bool
 
     def toggle_always_show_cursor(self, client):
-        self.always_show_cursor = not self.always_show_cursor
-        self.show_cursor(self.always_show_cursor, client)
+        self._always_show_cursor = not self._always_show_cursor
+        if self._always_show_cursor:
+            self.show_cursor(self._always_show_cursor, client)
 
 sc = ShowCursor()
 def toggle_show_cursor(client):
@@ -295,11 +301,10 @@ def toggle_show_cursor(client):
 
 def cursor_set(cls, client):
     def touchpad_is(_bool):
-        os.system('synclient TouchpadOff={}'.format(int(not(_bool))))
-
-    m = re.search(r'rxvt|emacs', cls.lower())
+        os.system('synclient TouchpadOff={}'.format(int(not _bool)))
+    m = re.search(STOP_CURSOR_CLS, cls.lower())
     touchpad_is(not m)
-    sc.show_cursor(not m,client)
+    sc.show_cursor(not m, client)
 
 def screenshot(window='root'):
     os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
@@ -595,8 +600,7 @@ class WindowManager():
         if not self.is_managed_window(window) or not self.is_alive_window(window):
             return
         
-        cls = self.get_window_class(window)
-        cursor_set(cls, client=self)
+        cursor_set(self.get_window_class(window), client=self)
 
         # FIXME: called two times? might be redundant
         debug('focus_window: %s', self.window_shortname(window))
