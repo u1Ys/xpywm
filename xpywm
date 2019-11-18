@@ -292,8 +292,7 @@ class ShowCursor():
 
     def toggle_always_show_cursor(self, client):
         self._always_show_cursor = not self._always_show_cursor
-        if self._always_show_cursor:
-            self.show_cursor(self._always_show_cursor, client)
+        self.show_cursor(self._always_show_cursor, client)
 
 sc = ShowCursor()
 def toggle_show_cursor(client):
@@ -478,11 +477,9 @@ class WindowManager():
         """Draw a frame window surrounding a windwow WINDOW."""
         debug('draw_frame_windows: %s', window)      
 
-        if not self.is_alive_window(window):
-            return
         try:
             geom = window.get_geometry()
-        except Xlib.error.BadWindow or Xlib.error.BadDrawable:
+        except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
             return
 
         self.focused_window = window
@@ -639,7 +636,7 @@ class WindowManager():
         """Focus recently used window."""
         if not self.is_exposed_window(self.last_focused_window) or \
            window == self.last_focused_window:
-            return       
+            return
         next_window = self.last_focused_window
         next_window.raise_window()
         self.warp_pointer(next_window)
