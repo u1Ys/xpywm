@@ -93,7 +93,7 @@ KEY_HANDLER = {
     # window transformation
     'apostrophe': {'modifier': X.Mod1Mask | X.ControlMask, 'callback': True,
                    'type': 'vscreen',
-                   'method': 'maximize_window',
+                   'method': 'toggle_maximize_window',
                    'first_arg_window': True},
     # window layouting
     'comma': {'modifier': X.Mod1Mask | X.ControlMask,

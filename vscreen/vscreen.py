@@ -10,11 +10,10 @@ class Vscreen():
     """Manage windows within a single vscreen (virtual screen). Here, only
 basic functions are implemented."""
 
-    def __init__(self, vscreen_number, frame_window, pointer, displaysize):
+    def __init__(self, vscreen_number, frame_window, pointer):
         self.vscreen_number = vscreen_number
         self.frame_window = frame_window
         self.pointer = pointer
-        self.displaysize = displaysize
 
         self.managed_windows = []
         self.last_focused_window = None
@@ -77,13 +76,8 @@ basic functions are implemented."""
     def focus_window(self, window):
         """Activate the input to the window WINDOW and the window frame is
         displayed."""
-        # TODO: Remove or Restore this code
-        # if not self.status.is_managed_window(window) or not self.status.is_alive_window(window):
-        #     return
-        
-        # MEMO: なかった
+
         window.raise_window()
-        # 
         self.pointer.cursor_set(window)
         window.set_input_focus(X.RevertToParent, 0)
         self.frame_window.draw_frame_windows(window)

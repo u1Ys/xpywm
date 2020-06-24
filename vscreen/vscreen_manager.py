@@ -14,7 +14,7 @@ vscreens."""
         self.frame_window = frame_window
 
         # create vscreens
-        self.vscreens = {i: VscreenExpand(i, self.frame_window, self.pointer, displaysize)
+        self.vscreens = {i: VscreenExpand(displaysize, i, self.frame_window, self.pointer)
                          for i in range(1, configure.MAX_VSCREEN+1)}
 
         self.current_vscreen = self.vscreens[1]

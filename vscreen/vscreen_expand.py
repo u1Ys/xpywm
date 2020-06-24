@@ -3,6 +3,8 @@
 import itertools
 import re
 
+from Xlib import X
+
 from .vscreen import Vscreen
 
 from .. import configure
@@ -13,54 +15,44 @@ class VscreenExpand(Vscreen):
 extended functions using the basic functions implemented in VScreen
 are implemented."""
 
-    def __init__(self, *args):
+    def __init__(self, displaysize, *args):
         super().__init__(*args)
         
+        self.displaysize = displaysize
+
+        self.unmaximized_window_geometries = {}
         self.last_index_hz = 0
 
     # ------------------------ maximize
-    # TODO
     def is_maximized(self, window):
         """Check if the window WINDOW seems to have been maximized."""
         geom = window.get_geometry()
-        width, height = self.get_screen_size()
-        if geom.x == 0 and geom.width == width:
-            return True
-        if geom.y == configure.Y_OFFSET and geom.height == (height - configure.Y_OFFSET):
-            return True
-        return False
+        return {'x': geom.x, 'y': geom.y,
+                'width': geom.width, 'height': geom.height} \
+                == self.displaysize.get_maximized_geometry()
 
     def save_window_geometry(self, window):
         """Save the current geometry of the window WINDOW."""
         geom = window.get_geometry()
-        self.geometries[window] = {
-            'x': geom.x, 'y': geom.y, 'width': geom.width, 'height':
-            geom.height
-        }
+        self.unmaximized_window_geometries[window] = {'x': geom.x, 'y': geom.y,
+                                   'width': geom.width, 'height': geom.height}
 
-    def load_window_geometry(self, window):
-        """Return the saved geometry of the window WINDOW.  If not saved yet,
-        return None."""
-        return self.geometries.get(window, None)
-
-    def maximize_window(self, window, horizontally=True, vertically=True):
+    def maximize_window(self, window):
         """Resize the geometry of the window WINDOW to cover the screen
         horizontally and/or vertically."""
-        if not self.is_exposed_window(window):
+        if not self.is_managed(window):
             return
-        geom = window.get_geometry()
-        x, y = geom.x, geom.y
-        width, height = geom.width, geom.height
+        window.configure(**self.displaysize.get_maximized_geometry())
+        self.focus_window(window)
 
-        screen_width, screen_height = self.get_screen_size()
-        if horizontally:
-            x, width = 0, screen_width
-        if vertically:
-            y, height = configure.Y_OFFSET, screen_height - configure.Y_OFFSET
-        window.configure(x=x, y=y, width=width, height=height, stack_mode=X.Above)
-
-        self.draw_frame_windows(window)
-        self.warp_pointer(window)
+    def toggle_maximize_window(self, window):
+        unmaximized_geometry = self.unmaximized_window_geometries.get(window, None)
+        if self.is_maximized(window) and unmaximized_geometry is not None:
+            window.configure(**unmaximized_geometry)
+            del self.unmaximized_window_geometries[window]
+        else:
+            self.save_window_geometry(window)
+            self.maximize_window(window)
 
     # ------------------------ layout
     def layout_all_windows(self):

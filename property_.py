@@ -51,7 +51,7 @@ class DisplaySize():
     def exsist_expand_display(self):
         pass
 
-    def get_screen_size(self, expand_disaply):
+    def get_screen_size(self, expand_disaply=False):
         resources = self.screen.root.xrandr_get_screen_resources()
         def is_connected(outputid):
             outinfo = self.display.xrandr_get_output_info(outputid, resources.timestamp)._data
@@ -79,6 +79,12 @@ class DisplaySize():
         if expand_disaply:
             height += configure.Y_OFFSET
         return width, height
+
+    def get_maximized_geometry(self):
+        screen_width, screen_height = self.get_screen_size()
+        x, y = 0, configure.Y_OFFSET
+        width, height = screen_width, screen_height - configure.Y_OFFSET
+        return {'x': x, 'y': y, 'width': width, 'height': height}
 
     def convert_geomtry(self, x, y, width, height, expand_disaply=False):
         screen_width, screen_height = self.get_usable_screen_size(expand_disaply)
