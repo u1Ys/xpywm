@@ -31,7 +31,9 @@ class Callback():
             return
         first_arg_window, args = entry.get('first_arg_window', False), entry.get('args', False)
         if args and args is not tuple:
-            args = tuple(args)
+            # convert to tuple via list because arguments of tuple
+            # must be iteratable
+            args = tuple([args])
         if first_arg_window:
             window = event.child
             method(window, *args) if args \
