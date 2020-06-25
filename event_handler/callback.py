@@ -30,7 +30,7 @@ class Callback():
             error(self, "unable to call '%s'", entry['method'])
             return
         first_arg_window, args = entry.get('first_arg_window', False), entry.get('args', False)
-        if args and args is not tuple:
+        if args and type(args) is not tuple:
             # convert to tuple via list because arguments of tuple
             # must be iteratable
             args = tuple([args])
