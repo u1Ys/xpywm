@@ -5,8 +5,8 @@ import re
 import Xlib
 
 from .. import configure
-from .. import external_command
-from .. import property_
+from ..util import external_command
+from ..util import property_
 
 class Pointer():
     def __init__(self, display, screen):

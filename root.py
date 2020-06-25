@@ -3,7 +3,7 @@
 from Xlib import display
 
 from .event_handler.event_handler import EventHandler
-from .property_ import DisplaySize
+from .util.property_ import DisplaySize
 from .vscreen.vscreen_manager import VScreenManager
 from .xwindow_component.frame_window import FrameWindow
 from .xwindow_component.pointer import Pointer

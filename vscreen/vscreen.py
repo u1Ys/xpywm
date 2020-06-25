@@ -3,8 +3,8 @@
 import Xlib
 from Xlib import X
 
-from .. import external_command
-from .. import property_
+from ..util import external_command
+from ..util import property_
 
 class Vscreen():
     """Manage windows within a single vscreen (virtual screen). Here, only

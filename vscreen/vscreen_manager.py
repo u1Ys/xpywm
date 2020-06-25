@@ -3,7 +3,7 @@
 from .vscreen_expand import VscreenExpand
 
 from .. import configure
-from ..log import debug
+from ..util.log import debug
 
 class VScreenManager():
     """Manage vscreen (virtual screeen). Also, move windows between

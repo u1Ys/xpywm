@@ -5,7 +5,7 @@ from Xlib import X, XK
 from . import keysyms
 from . import callback
 from .. import configure
-from ..log import debug
+from ..util.log import debug
 
 EVENT_HANDLER = {
     X.KeyPress: 'handle_keypress',

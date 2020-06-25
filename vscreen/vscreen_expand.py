@@ -8,7 +8,7 @@ from Xlib import X
 from .vscreen import Vscreen
 
 from .. import configure
-from .. import property_
+from ..util import property_
 
 class VscreenExpand(Vscreen):
     """Manage windows within a single vscreen (virtual screen). Here, the

@@ -4,8 +4,8 @@ import os
 import subprocess
 import sys
 
-from .. import external_command
-from ..log import error, debug
+from ..util import external_command
+from ..util.log import error, debug
 
 class Callback():
     def __init__(self, vscreen_manager):
@@ -13,7 +13,7 @@ class Callback():
 
     def call(self, event, entry):
         if 'os_command' in entry:
-            os.system(entry['os_command'])
+            os.system(entry['os_command'] + ' &')
         else:
             self.call_method(event, entry)
 
@@ -31,7 +31,7 @@ class Callback():
             return
         first_arg_window, args = entry.get('first_arg_window', False), entry.get('args', False)
         if args and args is not tuple:
-            args = tuple([args])
+            args = tuple(args)
         if first_arg_window:
             window = event.child
             method(window, *args) if args \
@@ -43,7 +43,7 @@ class Callback():
     # ------------------------
     def raise_emacs(self):
         if subprocess.getoutput('pidof emacs'):
-            self.vscreen_manager.current_vscreen.select_class_window('emacs')
+            self.vscreen_manager.pull_class_window('emacs')
         else:
             os.system('emacs &')
 
