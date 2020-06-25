@@ -77,7 +77,6 @@ basic functions are implemented."""
         """Activate the input to the window WINDOW and the window frame is
         displayed."""
 
-        window.raise_window()
         self.pointer.cursor_set(window)
         window.set_input_focus(X.RevertToParent, 0)
         self.frame_window.draw_frame_windows(window)
