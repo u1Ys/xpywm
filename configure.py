@@ -27,7 +27,7 @@ STOP_CURSOR_CLS = r'rxvt|emacs'
 
 LAYOUT_RULES = {
     r'xterm|rxvt': [.5, .3, 1 - .5, .7],
-    r'emacs': [0, 0, .5, 1],
+    r'code|emacs': [0, 0, .5, 1],
     r'firefox|iceweasel|chrom(e|ium)|midori':
     [.5, 0, .5, 1],
     r'(open|libre)office|acroread|xpdf|evince|mupdf|xdvi|tgif|xmathematical|gv':
@@ -149,11 +149,11 @@ KEY_HANDLER = {
           'type': 'callback',
           'method': 'raise_emacs'},
     '2': {'modifier': X.Mod1Mask | X.ControlMask,
-          'os_command': '(unset STY; rxvt-unicode) &'},
+          'os_command': '(unset STY; rxvt-unicode)'},
     '3': {'modifier': X.Mod1Mask | X.ControlMask,
           'os_command': 'google-chrome'},
     '0': {'modifier': X.Mod1Mask | X.ControlMask,
-          'os_command': '{}/bin/init/recall-xutils &'.format(os.getenv('HOME', ''))},
+          'os_command': '{}/bin/init/recall-xutils'.format(os.getenv('HOME', ''))},
     # os-command - screenshot
     'F5': {'modifier': X.ShiftMask,
            'type': 'external_command',
@@ -170,18 +170,18 @@ KEY_HANDLER = {
                     'os_command': 'xrandr-toggle'},
     # os-command - music player
     'F9':  {'modifier': X.ShiftMask,
-            'os_command': 'control-mplayer pause &'},
+            'os_command': 'control-mplayer pause'},
     'F10': {'modifier': X.ShiftMask,
-            'os_command': 'control-mplayer pt_step -1 &'},
+            'os_command': 'control-mplayer pt_step -1'},
     'F11': {'modifier': X.ShiftMask,
-            'os_command': 'control-mplayer pt_step  1 &'},
+            'os_command': 'control-mplayer pt_step  1'},
     'F12': {'modifier': X.ShiftMask,
             'os_command': 'pidof mplayer && control-mplayer quit || play-music -ar &'},
     # os-command - network
     'XF86WLAN': {'modifier': X.NONE,
-                 'os_command': 'pidof wpa_supplicant && sudo wi_cli stop || sudo wi_cli start &'},
+                 'os_command': 'pidof wpa_supplicant && sudo wi_cli stop || sudo wi_cli start'},
     'XF86Tools': {'modifier': X.NONE,
-                  'os_command': 'sudo wi_cli reconf-ip &'},
+                  'os_command': 'sudo wi_cli reconf-ip'},
     # os-command - sound
     'XF86AudioRaiseVolume': {'modifier': X.NONE,
                              'type': 'external_command',
@@ -190,7 +190,7 @@ KEY_HANDLER = {
                              'type': 'external_command',
                              'method': 'audio_lower_volume'},
     'XF86AudioMute': {'modifier': X.NONE,
-                      'os_command': 'audio-toggle-mute &'},
+                      'os_command': 'audio-toggle-mute'},
     # os-command - backlight
     'XF86MonBrightnessUp': {'modifier': X.NONE,
                             'os_command': 'backlight -inc 10'},
@@ -206,7 +206,7 @@ KEY_HANDLER = {
           'args': (1, 0)},
     # os-command - other
     'XF86AudioMicMute': {'modifier': X.NONE,
-                         'command': 'xtrlock -b'},
+                         'os_command': 'xtrlock -b'},
 }
 
 KEY_HANDLER['d'] = KEY_HANDLER['i']
