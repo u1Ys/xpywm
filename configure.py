@@ -176,7 +176,7 @@ KEY_HANDLER = {
     'F11': {'modifier': X.ShiftMask,
             'os_command': 'control-mplayer pt_step  1'},
     'F12': {'modifier': X.ShiftMask,
-            'os_command': 'pidof mplayer && control-mplayer quit || play-music -ar &'},
+            'os_command': 'pidof mplayer && control-mplayer quit || play-music -ar'},
     # os-command - network
     'XF86WLAN': {'modifier': X.NONE,
                  'os_command': 'pidof wpa_supplicant && sudo wi_cli stop || sudo wi_cli start'},

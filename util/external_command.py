@@ -50,6 +50,7 @@ def screenshot(window='root'):
 
 # raise from: vscreen.py
 def transset(window):
-    if not re.search(configure.INTRANSSET_CLS, property_.get_window_class(window).lower()) \
-       and not property_.is_browser_window(window):
-        os.system('pidof xcompmgr && transset --id {window.id} {configure.TRANSSET_ALPHA}')
+    if re.search(configure.INTRANSSET_CLS, property_.get_window_class(window).lower()) \
+       or property_.is_browser_window(window):
+        return
+    os.system('pidof xcompmgr && transset --id {window.id} {configure.TRANSSET_ALPHA}')
