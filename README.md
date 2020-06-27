@@ -185,7 +185,7 @@ KEYBOARD_HANDLER['F12'] = {
 
   Terminate xpywm.
 
-# AVAILABILITY
+# ~AVAILABILITY~
 
 The latest version of **xpywm** is available at PyPI
 (https://pypi.org/project/xpywm/) .
