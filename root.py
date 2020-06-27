@@ -3,10 +3,12 @@
 from Xlib import display
 
 from .event_handler.event_handler import EventHandler
-from .util.property_ import DisplaySize
+from .util.displaysize import DisplaySize
 from .vscreen.vscreen_manager import VScreenManager
+
 from .xwindow_component.frame_window import FrameWindow
 from .xwindow_component.pointer import Pointer
+
 
 class WindowManager():
     """The *root* of all modules. Bridging objects between classes of
@@ -32,7 +34,7 @@ root (HERE)
 - pointer
 - frame
 - property_.DisplaySize
-"""
+    """
 
     def __init__(self):
         self.display = display.Display()
@@ -50,7 +52,7 @@ root (HERE)
 
         # create frame windows here because frame windows is managed
         # if create them before _manage_exsist_windows()
-        self.frame_window.create_frame_windows()  
+        self.frame_window.create_frame_windows()
         # choose first window
         self.vscreen_manager.current_vscreen.select_other_window()
 
