@@ -67,13 +67,13 @@ screen, and each terminal will have the quarter of the screen.
 
 None
 
-# INSTALLATION
+# ~INSTALLATION~
 
 ```sh
 $ pip3 install xpywm
 ```
 
-# CUSTOMIZATION
+# ~CUSTOMIZATION~
 
 On startup, **xpywm** loads per-user RC script (`~/.xpywmrc`) if it exists.
 The RC script is any valid Python script.  You can change the appearance and
@@ -106,7 +106,7 @@ KEYBOARD_HANDLER['F12'] = {
 
 ```
 
-# BINDINGS
+# ~BINDINGS~
 
 - Mod1 + Button1
 
