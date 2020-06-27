@@ -43,8 +43,8 @@ vscreens."""
         next_, last = self.vscreens[n], self.current_vscreen
         if next_ == last:
             return
-        next_.open()
         last.close()
+        next_.open()
         self.current_vscreen, self.last_vscreen = next_, last
 
         f = open(configure.VSCREEN_FILE, mode='w')
@@ -72,7 +72,7 @@ vscreens."""
         self.current_vscreen.select_window(window)
 
     def all_move_init_vscreen(self):
-        for i in range(2, configure.MAX_VSCREEN+1):
+        for i in range(2, configure.MAX_VSCREEN + 1):
             vscreen_ = self.vscreens[i]
             for window in vscreen_.managed_windows:
                 self.move_window_another_vscreen(window, 1)

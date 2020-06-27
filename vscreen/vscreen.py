@@ -6,6 +6,7 @@ from Xlib import X
 from ..util import external_command
 from ..util import property_
 
+
 class Vscreen():
     """Manage windows within a single vscreen (virtual screen). Here, only
 basic functions are implemented."""
@@ -18,8 +19,8 @@ basic functions are implemented."""
         self.managed_windows = []
         self.last_focused_window = None
         self.pointer_geometry = pointer.default_geometry
-    
-     # ------------------------
+
+    # ------------------------
     def is_managed(self, window=None, window_class=None):
         if window is not None:
             return window in self.managed_windows
