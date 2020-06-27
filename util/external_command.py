@@ -9,6 +9,7 @@ from . import property_
 
 STOP_CURSOR_CLS = r'rxvt|emacs'
 
+
 def get_mixer_level():
     """Return the master playback volume of the default ALSA audio device.
     Volume ranges between 0 and 100."""
@@ -20,8 +21,10 @@ def get_mixer_level():
     else:
         return None
 
+
 def set_mixer_level(level):
     subprocess.getoutput('amixer set Master {}%'.format(level))
+
 
 def audio_raise_volume(delta=5):
     level = get_mixer_level()
@@ -29,8 +32,10 @@ def audio_raise_volume(delta=5):
         level = max(0, min(level + delta, 100))
         set_mixer_level(level)
 
+
 def audio_lower_volume(delta=5):
     audio_raise_volume(-delta)
+
 
 def backlight_toggle(brightness, brightness_other):
     print(brightness, brightness_other)
@@ -41,16 +46,19 @@ def backlight_toggle(brightness, brightness_other):
     except ValueError:
         return
 
+
 # raise from: pointer.py
 def enable_touchpad(bool_):
     os.system('synclient TouchpadOff={}'.format(int(not bool_)))
 
+
 def screenshot(window='root'):
     os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
+
 
 # raise from: vscreen.py
 def transset(window):
     if re.search(configure.INTRANSSET_CLS, property_.get_window_class(window).lower()) \
        or property_.is_browser_window(window):
         return
-    os.system('pidof xcompmgr && transset --id {window.id} {configure.TRANSSET_ALPHA}')
+    os.system(f'pidof xcompmgr && transset --id {window.id} {configure.TRANSSET_ALPHA}')
