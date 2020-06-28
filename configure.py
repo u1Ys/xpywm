@@ -11,6 +11,22 @@ from Xlib import X
 #     if getattr(own, attr):
 #         setattr(own, attr, value)
 
+
+def show_keybindings(key=None):
+    if key is None:
+        for key in KEY_HANDLER.keys():
+            show_keybindings(key)
+        return
+    keyconf = KEY_HANDLER.get(key, None)
+    if keyconf is None:
+        print(f'{key} is not binded')
+    else:
+        # pretty print
+        print(key, '\t' * (4 - int(len(key) / 8)),
+              keyconf.get('method', '') + keyconf.get('os_command', ''),
+              str(keyconf.get('args', '')))
+
+
 # ------------------------ default configure
 MAX_VSCREEN = 4
 FRAME_WIDTH = 2
@@ -159,10 +175,9 @@ KEY_HANDLER = {
     'F5': {'modifier': X.ShiftMask,
            'type': 'external_command',
            'method': 'screenshot'},
-    'F6': {'modifier': X.ShiftMask,
-           'type': 'callback',
-           'method': 'cb_screenshot'},
     # os-command - xrandr
+    'F6': {'modifier': X.ShiftMask,
+           'os_command': 'xrandr-auto --right-of eDP-1 --mode 1920x1080'},
     'F7': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto --mode 800x600'},
     'F8': {'modifier': X.ShiftMask,
