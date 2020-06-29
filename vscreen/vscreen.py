@@ -87,21 +87,26 @@ basic functions are implemented."""
         self.focus_window(window)
         self.pointer.move_to_window(window)
 
-    def select_other_window(self, window=None, next_=True):
+    def select_other_window(self, window=None, reverse=False):
         """Change the active window from the window WINDOW to the next one.
-        The active window is raised and focused.  The pointer is moved to the
-        north-west of the window."""
+        The active window is raised and focused.  The pointer is moved
+        to the north-west of the window. If reverse is True, reverse
+        the order. (move toprevious one)
+
+        """
         def _sort_key(window):
             geom = window.get_geometry()
             return geom.x * 10000 + geom.y
         # sort active windows with their geometries
         windows = sorted(self.managed_windows, key=_sort_key)
+        if reverse:
+            windows = list(reversed(windows))
         # if no window alive, do nothing
         if not windows:
-            return  
+            return
         try:
             i = windows.index(window)
-            next_window = windows[(i + int(next_)) % len(windows)]
+            next_window = windows[(i + 1) % len(windows)]
         except (IndexError, ValueError):
             next_window = windows[0]
         self.select_window(next_window)

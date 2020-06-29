@@ -97,7 +97,7 @@ KEY_HANDLER = {
     'o': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen',
           'method': 'select_other_window',
-          'first_arg_window': True, 'args': 1},
+          'first_arg_window': True, 'args': True},
     'u': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen',
           'method': 'select_last_window',
