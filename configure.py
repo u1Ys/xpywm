@@ -33,7 +33,7 @@ FRAME_WIDTH = 2
 FRAME_COLOR = os.environ.get('THEME_COLOR', 'aquamarine1')
 Y_OFFSET = 8
 
-VSCREEN_FILE = '/tmp/wm/wm_vscreen_num'
+VSCREEN_FILE = '/tmp/wm_vscreen_num'
 
 TRANSSET_ALPHA = '.85'
 INTRANSSET_CLS = r'mupdf|mplayer'
@@ -136,8 +136,8 @@ KEY_HANDLER = {
            'type': 'vscreen_manager',
            'method': 'select_vscreen', 'args': 4},
     'x': {'modifier': X.Mod1Mask | X.ControlMask,
-           'type': 'vscreen_manager',
-           'method': 'select_last_vscreen'},
+          'type': 'vscreen_manager',
+          'method': 'select_last_vscreen'},
     'q': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen_manager',
           'method': 'move_window_another_vscreen',
@@ -156,7 +156,7 @@ KEY_HANDLER = {
           'first_arg_window': True, 'args': 4},
     't': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen_manager',
-          'method': 'all_move_init_vscreen'},
+          'method': 'all_window_move_init_vscreen'},
     # pointer
     'f': {'modifier': X.Mod1Mask | X.ControlMask, 'callback': True,
           'type': 'pointer',

@@ -5,6 +5,7 @@ from .vscreen_expand import VscreenExpand
 from .. import configure
 from ..util.log import debug
 
+
 class VScreenManager():
     """Manage vscreen (virtual screeen). Also, move windows between
 vscreens."""
@@ -15,7 +16,7 @@ vscreens."""
 
         # create vscreens
         self.vscreens = {i: VscreenExpand(displaysize, i, self.frame_window, self.pointer)
-                         for i in range(1, configure.MAX_VSCREEN+1)}
+                         for i in range(1, configure.MAX_VSCREEN + 1)}
 
         self.current_vscreen = self.vscreens[1]
         self.last_vscreen = self.vscreens[2]
@@ -71,9 +72,16 @@ vscreens."""
         self.move_window_another_vscreen(window, self.current_vscreen.vscreen_number)
         self.current_vscreen.select_window(window)
 
-    def all_move_init_vscreen(self):
-        for i in range(2, configure.MAX_VSCREEN + 1):
-            vscreen_ = self.vscreens[i]
-            for window in vscreen_.managed_windows:
-                self.move_window_another_vscreen(window, 1)
-        self.select_vscreen(1)
+    def _all_window_move_vscreen(self, n):
+        for vscreen in self.vscreens.values():
+            if vscreen.vscreen_number == n:
+                continue
+            # create a new list object, because
+            # vscreen.managed_windows is changed in
+            # self.move_window_another_vscreen method
+            for window in list(vscreen.managed_windows):
+                self.move_window_another_vscreen(window, n)
+        self.select_vscreen(n)
+
+    def all_window_move_init_vscreen(self):
+        self._all_window_move_vscreen(1)
