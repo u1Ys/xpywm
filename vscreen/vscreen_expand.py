@@ -135,5 +135,6 @@ are implemented."""
             self.last_index_hz = 0
         hz_combinations[self.last_index_hz]
         windows = sorted(hz_combinations[self.last_index_hz], key=self._window_sort_key)
-        self._tile_windows(windows=windows)
+        self._tile_windows(windows=windows,
+                           xrandr=self.displaysize.create_xrandr_request())
         self.select_window(windows[0])
