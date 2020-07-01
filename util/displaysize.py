@@ -7,6 +7,16 @@ from .log import debug
 
 
 class DisplaySize():
+    """If you want to get screen_size...
+# 1. create DisplaySize instance
+displaysize = DisplaySize()
+# 2. create FetchXRandr instance for each get timing
+xrandr = displaysize.create_xrandr_request()
+# 3. request
+width, height = xrandr.get_screen_size()
+
+    """
+
     def __init__(self, display, screen):
         self.display = display
         self.screen = screen
@@ -14,8 +24,8 @@ class DisplaySize():
         self.last_crtcinfos = FetchXRandr(self.display, self.screen).connected_crtcinfos
 
     def create_xrandr_request(self):
-        debug(self, 'create_xrandr_request')
         # This is because the xradnr_get_* will take some time.
+        debug(self, 'create_xrandr_request')
         resources = self.screen.root.xrandr_get_screen_resources()
         timestamp = resources.timestamp
         crtcinfos = None
@@ -41,6 +51,9 @@ class FetchXRandr():
             debug(self, 'skip get*')
             self.crtcinfos = crtcinfos
             pass
+        # Check the connection information every time because the
+        # timestamp does not change even if the display connection is
+        # changed
         self.connected_crtcinfos = self._get_connected(self.crtcinfos)
 
     def _get_crtcinfos(self, resources=None):
