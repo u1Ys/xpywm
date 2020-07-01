@@ -14,26 +14,6 @@ class WindowManager():
     """The *root* of all modules. Bridging objects between classes of
     different elements.
 
-Structure of this program
-root (HERE)
-- vscreen_manager
-  - vscreen
-    (- pointer) # call pointer object root created
-    (- frame)
-    (- property_.DisplaySize)
-  - vscreen
-  - vscreen
-    :
-    :
-- event_handler
-   - callback
-     # call allmost
-   - keysyms
-   (- frame)
-   (- vscreen)
-- pointer
-- frame
-- property_.DisplaySize
     """
 
     def __init__(self):
