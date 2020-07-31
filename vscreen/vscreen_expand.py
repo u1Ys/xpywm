@@ -66,17 +66,19 @@ are implemented."""
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
                 if re.search(regexp, class_, flags=re.IGNORECASE):
-                    if half_size is not None:
+                    if half_size:
                         # 0, 1, 2, 3 = x, y, w, h
                         geom[3] *= 1 / 2
                         geom[1] += geom[3]
                     window.configure(**xrandr.convert_geomtry(*geom))
 
         xrandr = self.displaysize.create_xrandr_request()
+        use_half_size = [property_.is_movie_window(window)
+                         for window in self.managed_windows].count(True) >= 2
         for window in self.managed_windows:
             class_ = property_.get_window_class(window).lower()
             layout_window(window, class_, xrandr,
-                          half_size=property_.is_movie_window(window))
+                          half_size=property_.is_movie_window(window) and use_half_size)
 
     # ------------------------ tile
     def _window_sort_key(self, window):
