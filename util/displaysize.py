@@ -10,7 +10,7 @@ class DisplaySize():
     """If you want to get screen_size...
 # 1. create DisplaySize instance
 displaysize = DisplaySize()
-# 2. create FetchXRandr instance for each get timing
+# 2. create XRandrRequest instance for each get timing
 xrandr = displaysize.create_xrandr_request()
 # 3. request
 width, height = xrandr.get_screen_size()
@@ -21,36 +21,35 @@ width, height = xrandr.get_screen_size()
         self.display = display
         self.screen = screen
 
-        self.last_crtcinfos = FetchXRandr(self.display, self.screen).connected_crtcinfos
+        self.last_crtcinfos = XRandrRequest(self.display, self.screen).crtcinfos
 
     def create_xrandr_request(self):
         # This is because the xradnr_get_* will take some time.
         debug(self, 'create_xrandr_request')
         resources = self.screen.root.xrandr_get_screen_resources()
         timestamp = resources.timestamp
-        crtcinfos = None
         # To reduce the number of xrandr_get_*, when the timestamp of
         # the last information fetch is the same as the current
         # timestamp, information is not newly fetched and use the last
         # fetched information
+        crtcinfos = None
         if timestamp == self.last_crtcinfos[0]['timestamp']:
             crtcinfos = self.last_crtcinfos
-        xradnr = FetchXRandr(self.display, self.screen, resources, crtcinfos)
+        xradnr = XRandrRequest(self.display, self.screen, resources, crtcinfos)
         self.last_crtcinfos = xradnr.crtcinfos
         return xradnr
 
 
-class FetchXRandr():
+class XRandrRequest():
     def __init__(self, display, screen, resources=None, crtcinfos=None):
         self.display = display
         self.screen = screen
 
+        # save crtcinfos for reuse it when the connection state changes
         if crtcinfos is None:
             self.crtcinfos = self._get_crtcinfos(resources)
         else:
-            debug(self, 'skip get*')
             self.crtcinfos = crtcinfos
-            pass
         # Check the connection information every time because the
         # timestamp does not change even if the display connection is
         # changed
@@ -66,17 +65,12 @@ class FetchXRandr():
                 debug(self, f'xrandr_get_crtc_info {crtcid} {timestamp}')
                 crtcinfo = self.display.xrandr_get_crtc_info(crtcid, timestamp)._data
                 return crtcinfo
-            except Xlib.error.XError:
-                # Xlib.error.XError -> output is not displayed, maybe
+            except Xlib.error.XError:  # Xlib.error.XError -> output is not displayed, maybe
                 return None
 
-        crtcinfos = []
-        for crtcid in resources._data['crtcs']:
-            crtcinfo = get_crtcinfo(crtcid)
-            if crtcinfo is None:
-                continue
-            crtcinfos.append(crtcinfo)
-        return crtcinfos
+        return [crtcinfo for crtcinfo in
+                [get_crtcinfo(crtcid) for crtcid in resources._data['crtcs']]
+                if crtcinfo is not None]
 
     def _get_connected(self, crtcinfos):
         def is_connected(crtcinfo):
@@ -85,8 +79,8 @@ class FetchXRandr():
             outputid, timestamp = crtcinfo['outputs'][0], crtcinfo['timestamp']
             debug(self, f'xrandr_get_output_info {outputid} {timestamp}')
             outinfo = self.display.xrandr_get_output_info(outputid, timestamp)._data
-            # connection: 1 -> connected, connection: 0 -> unconnected
-            return not(outinfo['connection'])
+            # connection: 0 -> connected, connection: 1 -> unconnected
+            return outinfo['connection'] == 0
 
         return [crtcinfo for crtcinfo in crtcinfos if is_connected(crtcinfo)]
 
