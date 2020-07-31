@@ -49,8 +49,7 @@ class Callback():
         else:
             os.system('emacs &')
 
-    def cb_screenshot(self, event):
-        window = event.child
+    def cb_screenshot(self, window):
         try:
             external_command.screenshot(window.id)
         except AttributeError:
