@@ -8,6 +8,7 @@ from .. import configure
 from ..util import external_command
 from ..util import property_
 
+
 class Pointer():
     def __init__(self, display, screen):
         self.display = display
@@ -18,7 +19,7 @@ class Pointer():
         # xfixes_hide_cursor, X times exexutoin of xfixes_show_cursor
         # is need to show cursor) -u1 [2019/10/28]
         self.last_show_request = None
-        self.always_show_cursor = False        
+        self.always_show_cursor = False
 
     def current_geometry(self):
         return {'x': self.screen.root.query_pointer().root_x,
@@ -27,7 +28,7 @@ class Pointer():
     @property
     def default_geometry(self):
         return {'x': 0, 'y': 0}
-        
+
     # ------------------------
     def move(self, geometry):
         current_geometry = self.current_geometry()
@@ -55,11 +56,11 @@ class Pointer():
         self.last_show_request = show
 
     def toggle_always_show_cursor(self):
-        self._always_show_cursor = not self.always_show_cursor
-        self.show_cursor(self._always_show_cursor)
+        self.always_show_cursor = not self.always_show_cursor
+        self.show_cursor(self.always_show_cursor)
 
     def cursor_set(self, window):
-        m = re.search(configure.STOP_CURSOR_CLS, 
-                      property_.get_window_class(window).lower())        
+        m = re.search(configure.STOP_CURSOR_CLS,
+                      property_.get_window_class(window).lower())
         external_command.enable_touchpad(not m)
         self.show_cursor(not m)
