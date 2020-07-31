@@ -173,8 +173,10 @@ KEY_HANDLER = {
           'os_command': '{}/bin/init/recall-xutils'.format(os.getenv('HOME', ''))},
     # os-command - screenshot
     'F5': {'modifier': X.ShiftMask,
-           'type': 'external_command',
-           'method': 'screenshot'},
+           'type': 'callback',
+           # 'method': 'screenshot'},
+           'method': 'cb_screenshot',
+           'first_arg_window': True},
     # os-command - xrandr
     'F6': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto --right-of eDP-1 --mode 1920x1080'},
