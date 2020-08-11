@@ -6,7 +6,7 @@ import re
 from .vscreen import Vscreen
 
 from .. import configure
-from ..util import property_
+from ..util import property_, log
 
 
 class VscreenExpand(Vscreen):
@@ -62,23 +62,27 @@ are implemented."""
 
     # ------------------------ layout
     def layout_all_windows(self):
-        def layout_window(window, class_, xrandr, half_size=False):
+        def layout_window(window, class_, xrandr, half_size_windows=[]):
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
                 if re.search(regexp, class_, flags=re.IGNORECASE):
-                    if half_size:
+                    if window in half_size_windows:
+                        i = half_size_windows.index(window)
                         # 0, 1, 2, 3 = x, y, w, h
                         geom[3] *= 1 / 2
-                        geom[1] += geom[3]
+                        # switch window position between upper and lower half
+                        geom[1] += (i + 1) % 2 * geom[3]
                     window.configure(**xrandr.convert_geomtry(*geom))
 
         xrandr = self.displaysize.create_xrandr_request()
-        use_half_size = [property_.is_movie_window(window)
-                         for window in self.managed_windows].count(True) >= 2
+        half_size_windows = [window for window in self.managed_windows
+                             if property_.is_browser_window(window)]
+        if len(half_size_windows) <= 1:
+            half_size_windows = []
         for window in self.managed_windows:
             class_ = property_.get_window_class(window).lower()
             layout_window(window, class_, xrandr,
-                          half_size=property_.is_movie_window(window) and use_half_size)
+                          half_size_windows=half_size_windows)
 
     # ------------------------ tile
     def _window_sort_key(self, window):
