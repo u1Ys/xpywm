@@ -10,7 +10,7 @@ class DisplaySize():
     """If you want to get screen_size...
 # 1. create DisplaySize instance
 displaysize = DisplaySize()
-# 2. create XRandrRequest instance for each get timing
+# 2. create _XRandrRequest instance for each get timing
 xrandr = displaysize.create_xrandr_request()
 # 3. request
 width, height = xrandr.get_screen_size()
@@ -21,7 +21,7 @@ width, height = xrandr.get_screen_size()
         self.display = display
         self.screen = screen
 
-        self.last_crtcinfos = XRandrRequest(self.display, self.screen).crtcinfos
+        self.last_crtcinfos = _XRandrRequest(self.display, self.screen).crtcinfos
 
     def create_xrandr_request(self):
         # This is because the xradnr_get_* will take some time.
@@ -35,12 +35,12 @@ width, height = xrandr.get_screen_size()
         crtcinfos = None
         if timestamp == self.last_crtcinfos[0]['timestamp']:
             crtcinfos = self.last_crtcinfos
-        xradnr = XRandrRequest(self.display, self.screen, resources, crtcinfos)
+        xradnr = _XRandrRequest(self.display, self.screen, resources, crtcinfos)
         self.last_crtcinfos = xradnr.crtcinfos
         return xradnr
 
 
-class XRandrRequest():
+class _XRandrRequest():
     def __init__(self, display, screen, resources=None, crtcinfos=None):
         self.display = display
         self.screen = screen
