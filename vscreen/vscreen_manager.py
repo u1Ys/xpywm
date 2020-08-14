@@ -21,6 +21,8 @@ vscreens."""
         self.current_vscreen = self.vscreens[1]
         self.last_vscreen = self.vscreens[2]
 
+        self.updatefile = _FileUpdate(1)
+
     def is_vscreen_of(self, window):
         for vscreen in self.vscreens.values():
             if vscreen.is_managed(window):
@@ -48,9 +50,7 @@ vscreens."""
         next_.open()
         self.current_vscreen, self.last_vscreen = next_, last
 
-        f = open(configure.VSCREEN_FILE, mode='w')
-        print(n, file=f, flush=True)
-        f.close()
+        self.updatefile.update(n)
 
     def select_last_vscreen(self):
         self.select_vscreen(self.last_vscreen.vscreen_number)
@@ -85,3 +85,26 @@ vscreens."""
 
     def all_window_move_init_vscreen(self):
         self._all_window_move_vscreen(1)
+
+
+class _FileUpdate():
+    def __init__(self, init):
+        # if you annoy file writing, set this variable True
+        self.disable = False
+
+        self.filename = configure.VSCREEN_FILE
+
+        self._create_file(init)
+
+    def _write(self, s, mode):
+        if self.disable:
+            return
+        f = open(self.filename, mode=mode)
+        print(str(s), file=f, flush=True)
+        f.close()
+
+    def _create_file(self, s):
+        self._write(s, 'a')
+
+    def update(self, s):
+        self._write(s, 'w')
