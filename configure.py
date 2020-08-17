@@ -44,9 +44,9 @@ STOP_CURSOR_CLS = r'rxvt|emacs'
 LAYOUT_RULES = {
     r'xterm|rxvt': [.5, .3, 1 - .5, .7],
     r'code|emacs': [0, 0, .5, 1],
-    r'firefox|iceweasel|chrom(e|ium)|midori':
+    r'firefox|iceweasel|chrom(e|ium)|midori|vivaldi':
     [.5, 0, .5, 1],
-    r'(open|libre)office|acroread|xpdf|evince|mupdf|xdvi|tgif|xmathematical|gv':
+    r'(open|libre)office|acroread|xpdf|evince|mupdf|xdvi|tgif|xmathematical|gv|teams':
     [.5, 0, .5, 1],
 }
 
@@ -179,16 +179,16 @@ KEY_HANDLER = {
            'first_arg_window': True},
     # os-command - xrandr
     'F6': {'modifier': X.ShiftMask,
-           'os_command': 'xrandr-auto --right-of eDP-1 --mode 1920x1080'},
-    'F7': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto --mode 800x600'},
+    'F7': {'modifier': X.ShiftMask,
+           'os_command': 'xrandr-auto _max --right-of eDP-1'},
     'F8': {'modifier': X.ShiftMask,
-           'os_command': 'xrandr-auto --mode 1920x1080'},
+           'os_command': 'xrandr-auto _max'},
     'XF86Display': {'modifier': X.NONE,
                     'os_command': 'xrandr-toggle'},
     # os-command - music player
-    'F9':  {'modifier': X.ShiftMask,
-            'os_command': 'control-mplayer pause'},
+    'F9': {'modifier': X.ShiftMask,
+           'os_command': 'control-mplayer pause'},
     'F10': {'modifier': X.ShiftMask,
             'os_command': 'control-mplayer pt_step -1'},
     'F11': {'modifier': X.ShiftMask,
