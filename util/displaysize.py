@@ -109,7 +109,7 @@ class _XRandrRequest():
         exsist_xpymon = force_primary or not self.exsist_expand_display
         x, y = self.get_screen_xy(exsist_xpymon)
         width, height = self.get_screen_size(force_primary)
-        return {'x': x, 'y': y, 'width': width, 'height': height}
+        return {'x': x, 'y': y, 'width': width, 'height': height - y}
 
     def get_usable_geometry(self, force_primary=False):
         x, y, width, height = self.get_maximized_geometry(force_primary).values()
