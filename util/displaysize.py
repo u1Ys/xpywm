@@ -114,7 +114,7 @@ class _XRandrRequest():
     def get_usable_geometry(self, force_primary=False):
         x, y, width, height = self.get_maximized_geometry(force_primary).values()
         width -= configure.FRAME_WIDTH * 2
-        height -= configure.FRAME_WIDTH * 2 + y
+        height -= configure.FRAME_WIDTH * 2
         return x, y, width, height
 
     def convert_geomtry(self, px, py, pwidth, pheight, force_primary=False):
