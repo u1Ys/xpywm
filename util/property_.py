@@ -4,7 +4,7 @@ import re
 import subprocess
 
 MOVIE_WINDOW_REGEXP = r'mplayer|ニコニコ動画|ニコニコ生放送|youtube|twitch|abema|openrec|prime|動画再生'
-BROWSER_WINDOW_REGEXP = r'chromium|chrome|firefox'
+BROWSER_WINDOW_REGEXP = r'chromium|chrome|firefox|vivaldi'
 
 
 def get_window_class(window):
