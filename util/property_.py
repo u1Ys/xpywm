@@ -3,7 +3,7 @@
 import re
 import subprocess
 
-MOVIE_WINDOW_REGEXP = r'mplayer|ニコニコ動画|ニコニコ生放送|youtube|twitch|abema|openrec|prime|動画再生'
+MOVIE_WINDOW_REGEXP = r'mplayer|ニコニコ動画|ニコニコ生放送|youtube|twitch|abema|openrec|prime|動画再生|(apple music)'
 BROWSER_WINDOW_REGEXP = r'chromium|chrome|firefox|vivaldi'
 
 

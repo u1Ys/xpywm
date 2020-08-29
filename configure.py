@@ -39,6 +39,7 @@ TRANSSET_ALPHA = '.85'
 INTRANSSET_CLS = r'mupdf|mplayer'
 
 POINTER_OFFSET = 16
+DEFAULT_POINTER_GEOMETRY = {'x': 1, 'y': 0}
 STOP_CURSOR_CLS = r'rxvt|emacs'
 
 LAYOUT_RULES = {
@@ -181,9 +182,9 @@ KEY_HANDLER = {
     'F6': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto --mode 800x600'},
     'F7': {'modifier': X.ShiftMask,
-           'os_command': 'xrandr-auto _max --right-of eDP-1'},
-    'F8': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto _max'},
+    'F8': {'modifier': X.ShiftMask,
+           'os_command': 'xrandr-auto _max --right-of eDP-1'},
     'XF86Display': {'modifier': X.NONE,
                     'os_command': 'xrandr-toggle'},
     # os-command - music player
