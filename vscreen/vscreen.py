@@ -17,8 +17,6 @@ basic functions are implemented."""
         self.pointer = pointer
 
         self.managed_windows = []
-        self.last_focused_window = None
-        self.pointer_geometry = pointer.default_geometry
 
     # ------------------------
     def is_managed(self, window=None, window_class=None):
@@ -30,14 +28,21 @@ basic functions are implemented."""
                     return window
         return False
 
+    @property
+    def current_focused_window(self):
+        return self.managed_windows[-1] if self.managed_windows else None
+
     # ------------------------
     def open(self):
-        self.pointer.move(self.pointer_geometry)
+        if self.managed_windows:
+            self.pointer.move_to(self.current_focused_window)
+        else:
+            self.pointer.move(self.pointer.default_geometry)
+
         for window in self.managed_windows:
             window.map()
 
     def close(self):
-        self.pointer_geometry = self.pointer.current_geometry()
         for window in self.managed_windows:
             window.unmap()
 
@@ -59,51 +64,56 @@ basic functions are implemented."""
         self.managed_windows.append(window)
         window.map()
         mask = X.EnterWindowMask | X.LeaveWindowMask
-        window.change_attributes(event_mask=mask)            
+        window.change_attributes(event_mask=mask)
         external_command.transset(window)
 
     def unmanage_window(self, window):
         """The window WINDOW leaves from the control of the window manager."""
         # TODO: need check is managed?
-        if self.is_managed(window):
-            self.managed_windows.remove(window)
+        if not self.is_managed(window):
+            return
+        self.managed_windows.remove(window)
 
     def destroy_window(self, window):
         """Kill the window WINDOW."""
-        if self.is_managed(window):
-            window.destroy()
-            self.unmanage_window(window)
+        if not self.is_managed(window):
+            return
+        window.destroy()
+        self.unmanage_window(window)
 
-    def focus_window(self, window):
+    def activate_window(self, window):
         """Activate the input to the window WINDOW and the window frame is
         displayed."""
-
         self.pointer.cursor_set(window)
         window.set_input_focus(X.RevertToParent, 0)
         self.frame_window.draw_frame_windows(window)
+        # move the current window to last of managed_windows
+        self.managed_windows.append(
+            self.managed_windows.pop(self.managed_windows.index(window))
+        )
 
     def select_window(self, window):
+        """Change the active window to WINDOW.  The active window is raised
+        and activated.  The pointer is moved to the window.
+        """
         window.raise_window()
-        self.focus_window(window)
-        self.pointer.move_to_window(window)
+        self.pointer.move_to(window)
+        self.activate_window(window)
 
     def select_other_window(self, window=None, reverse=False):
         """Change the active window from the window WINDOW to the next one.
-        The active window is raised and focused.  The pointer is moved
-        to the north-west of the window. If reverse is True, reverse
-        the order. (move toprevious one)
 
         """
         def _sort_key(window):
             geom = window.get_geometry()
             return geom.x * 10000 + geom.y
+        # if no window alive, do nothing
+        if not self.managed_windows:
+            return
         # sort active windows with their geometries
         windows = sorted(self.managed_windows, key=_sort_key)
         if reverse:
             windows = list(reversed(windows))
-        # if no window alive, do nothing
-        if not windows:
-            return
         try:
             i = windows.index(window)
             next_window = windows[(i + 1) % len(windows)]
@@ -112,10 +122,10 @@ basic functions are implemented."""
         self.select_window(next_window)
 
     def select_last_window(self, window):
-        if not self.is_managed(self.last_focused_window) \
-           or window == self.last_focused_window:
+        if len(self.managed_windows) < 2:
             return
-        self.select_window(self.last_focused_window)
+        last_focused_window = self.managed_windows[-2]
+        self.select_window(last_focused_window)
 
     def select_class_window(self, window_class):
         window = self.is_managed(window_class=window_class)

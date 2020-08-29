@@ -25,6 +25,7 @@ DRAG_THRESH = 16
 MIN_WIN_SIZE = 16
 BOUNCE_RATIO = 1 / 8
 
+
 class EventHandler():
     def __init__(self, display, screen, vscreen_manager):
         self.vscreen_manager = vscreen_manager
@@ -70,8 +71,8 @@ class EventHandler():
         """Configure the root window to receive mouse button events."""
         for button in [1, 3]:
             self.screen.root.grab_button(button, X.Mod1Mask, True,
-                                              X.ButtonPressMask, X.GrabModeAsync,
-                                              X.GrabModeAsync, X.NONE, X.NONE)
+                                         X.ButtonPressMask, X.GrabModeAsync,
+                                         X.GrabModeAsync, X.NONE, X.NONE)
 
     def handle_keypress(self, event):
         """Event handler for KeyPress events.  Callback functions for every
@@ -158,19 +159,21 @@ class EventHandler():
         window = event.window
         vscreen = self.vscreen_manager.current_vscreen
         if vscreen.is_managed(window):
-            vscreen.focus_window(window)
+            vscreen.activate_window(window)
 
     def handle_leave_notify(self, event):
         """Event handler for LeaveNotify events."""
         window = event.window
-        vscreen = self.vscreen_manager.current_vscreen
-        vscreen.last_focused_window = window
+        pointer = self.vscreen_manager.pointer
+        if self.vscreen_manager.exsist(window):
+            pointer.save_geometry_at(window, pointer.pop_temporary_geometry())
 
     def handle_destroy_notify(self, event):
         """Event handler for DestroyNotify events."""
         window = event.window
         vscreen = self.vscreen_manager.current_vscreen
         vscreen.unmanage_window(window)
+        vscreen.pointer.remove_geometry_of(window)
         self.vscreen_manager.frame_window.clear_frame_window(window)
 
     def handle_configure_request(self, event):
@@ -195,6 +198,11 @@ class EventHandler():
         while True:
             event = self.display.next_event()
             type_ = event.type
+            if type_ is X.KeyPress:
+                # Templary save the geomery of pointer here. Because
+                # when LeaveNotify is raised, pointer is already moved
+                # away.
+                self.vscreen_manager.pointer.save_temporary_geometry()
             if type_ in EVENT_HANDLER:
                 handler = getattr(self, EVENT_HANDLER[type_], None)
                 if handler:

@@ -14,6 +14,9 @@ class Pointer():
         self.display = display
         self.screen = screen
 
+        self.geometries = {}
+        self.last_geometry = None
+
         # hold/check last command, because it seems xfixes_hide_cursor
         # instuction is stacked. (If X times execute
         # xfixes_hide_cursor, X times exexutoin of xfixes_show_cursor
@@ -21,6 +24,7 @@ class Pointer():
         self.last_show_request = None
         self.always_show_cursor = False
 
+    @property
     def current_geometry(self):
         return {'x': self.screen.root.query_pointer().root_x,
                 'y': self.screen.root.query_pointer().root_y}
@@ -31,16 +35,63 @@ class Pointer():
 
     # ------------------------
     def move(self, geometry):
-        current_geometry = self.current_geometry()
+        """Move pointer to absoulute GEOMETRY"""
+        current_geometry = self.current_geometry
         self.display.warp_pointer(geometry['x'] - current_geometry['x'],
                                   geometry['y'] - current_geometry['y'])
 
-    def move_to_window(self, window):
+    def move_to(self, window):
+        def shift(pval):
+            return {
+                0: configure.POINTER_OFFSET,
+                1: -1 * configure.POINTER_OFFSET,
+            }.get(pval, 0)
+
         try:
             geom = window.get_geometry()
         except Xlib.error.BadDrawable:
             return
-        window.warp_pointer(geom.width - configure.POINTER_OFFSET, configure.POINTER_OFFSET)
+        p_geom = self.geometries.get(window, configure.DEFAULT_POINTER_GEOMETRY)
+        # MEMO: window.warp_pointer()
+        self.move({
+            'x': geom.x + int(geom.width * p_geom['x']) + shift(p_geom['x']),
+            'y': geom.y + int(geom.height * p_geom['y']) + shift(p_geom['y']),
+        })
+
+    def save_temporary_geometry(self):
+        self.last_geometry = self.current_geometry
+
+    def pop_temporary_geometry(self):
+        last_geometry = self.last_geometry
+        self.last_geometry = None
+        return last_geometry
+
+    def save_geometry_at(self, window, geom_abs):
+        """Save the relative geometry of the pointer in the window. Because
+        the window size changes often, save the *relative* position of
+        the pointer, not the absolute position. If the pointer is
+        outside the window frame, it is considered invalid and is not
+        saved.
+
+        """
+        def is_bound(lower, value, upper):
+            return lower <= value and value <= upper
+
+        try:
+            geom = window.get_geometry()
+            x_window, y_window = geom_abs['x'] - geom.x, geom_abs['y'] - geom.y
+        # Xlib.error.BadDrawable -> window.get_geometry()
+        # TypeError -> geom_abs is None
+        except (Xlib.error.BadDrawable, TypeError):
+            return
+        p_x, p_y = x_window / geom.width, y_window / geom.height
+        if any(map(lambda p: not is_bound(0, p, 1), [p_x, p_y])):
+            return
+        self.geometries[window] = {'x': p_x, 'y': p_y}
+
+    def remove_geometry_of(self, window):
+        if window in self.geometries:
+            del self.geometries[window]
 
     # ------------------------
     def show_cursor(self, request):
