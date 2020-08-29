@@ -122,10 +122,9 @@ are implemented."""
         xrandr = self.displaysize.create_xrandr_request()
         if xrandr.exsist_expand_display:
             windows = sorted(self.managed_windows, key=self._window_sort_key)
-            n_windows_half = int(len(windows) / 2)
+            n_windows_on_primary = int((len(windows) + 1) / 2)
             # assume expand display is larger than primary one
-            windows_on_primary, windows_on_expand = windows[:int(n_windows_half + len(windows) % 2)], \
-                windows[n_windows_half * (-1):]
+            windows_on_primary, windows_on_expand = windows[:n_windows_on_primary], windows[n_windows_on_primary:]
             self._tile_windows(windows_on_primary, xrandr, force_primary=True)
             self._tile_windows(windows_on_expand, xrandr, force_primary=False)
         else:
