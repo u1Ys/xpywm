@@ -3,7 +3,7 @@
 import Xlib
 
 from .. import configure
-from .log import debug
+from ..util.log import debug
 
 
 class DisplaySize():
