@@ -15,16 +15,24 @@ from Xlib import X
 def show_keybindings(key=None):
     if key is None:
         for key in KEY_HANDLER.keys():
-            show_keybindings(key)
-        return
+            _show_keybinding(key)
+    else:
+        _show_keybinding(key)
+
+
+def _show_keybinding(key):
     keyconf = KEY_HANDLER.get(key, None)
     if keyconf is None:
         print(f'{key} is not binded')
-    else:
-        # pretty print
-        print(key, '\t' * (4 - int(len(key) / 8)),
-              keyconf.get('method', '') + keyconf.get('os_command', ''),
-              str(keyconf.get('args', '')))
+        return
+    modifiers = '+'.join([key for key, val in {
+        'Shift': X.ShiftMask,
+        'Alt': X.Mod1Mask,
+        'Ctrl': X.ControlMask
+    }.items() if keyconf['modifier'] & val])
+    callback_function = keyconf.get('method', False) or keyconf.get('os_command')
+    args = str(keyconf.get('args', ''))
+    print('\t'.join([modifiers, key, callback_function, args]))
 
 
 # ------------------------ default configure
