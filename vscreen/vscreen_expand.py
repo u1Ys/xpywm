@@ -3,10 +3,12 @@
 import itertools
 import re
 
+from Xlib import X
+
 from .vscreen import Vscreen
 
 from .. import configure
-from ..util import property_, log
+from ..util import property_
 
 
 class VscreenExpand(Vscreen):
@@ -133,13 +135,19 @@ are implemented."""
             self.select_window(window)
 
     # ------------------------ horizontal split windows
-    def horizontal_split_windows(self, next_=True):
-        self.last_index_hz += 1 if next_ else -1
+    def horizontal_split_windows(self):
         hz_combinations = list(itertools.combinations(self.managed_windows, 2))
+        self.last_index_hz += 1
         if self.last_index_hz >= len(hz_combinations):
             self.last_index_hz = 0
         hz_combinations[self.last_index_hz]
         windows = sorted(hz_combinations[self.last_index_hz], key=self._window_sort_key)
         self._tile_windows(windows=windows,
                            xrandr=self.displaysize.create_xrandr_request())
+        # trick to use `select_last_window` between `windows`
+        # move the current window to last of managed_windows
+        self.managed_windows.append(
+            self.managed_windows.pop(self.managed_windows.index(windows[1]))
+        )
         self.select_window(windows[0])
+        map(lambda w: w.configure(stack_mode=X.Above), windows)
