@@ -3,11 +3,10 @@
 from Xlib import display
 
 from .event_handler.event_handler import EventHandler
-from .util.displaysize import DisplaySize
 from .vscreen.vscreen_manager import VScreenManager
-
 from .xwindow_component.frame_window import FrameWindow
 from .xwindow_component.pointer import Pointer
+from .xwindow_component.displaysize import DisplaySize
 
 
 class WindowManager():
