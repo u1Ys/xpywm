@@ -112,7 +112,15 @@ KEYBOARD_HANDLER['F12'] = {
 
 ```
 
-# ~BINDINGS~
+# BINDINGS
+
+see
+
+```
+$ xpywm --help
+```
+
+## Original
 
 - Mod1 + Button1
 
