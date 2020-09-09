@@ -3,8 +3,6 @@
 import itertools
 import re
 
-from Xlib import X
-
 from .vscreen import Vscreen
 
 from .. import configure
@@ -64,10 +62,11 @@ are implemented."""
 
     # ------------------------ layout
     def layout_all_windows(self):
-        def layout_window(window, class_, xrandr, half_size_windows=[]):
+        def layout_window(window, xrandr, half_size_windows=[]):
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
-                if re.search(regexp, class_, flags=re.IGNORECASE):
+                if re.search(regexp, property_.get_window_class(window).lower(),
+                             flags=re.IGNORECASE):
                     if window in half_size_windows:
                         i = half_size_windows.index(window)
                         # 0, 1, 2, 3 = x, y, w, h
@@ -82,9 +81,7 @@ are implemented."""
         if len(half_size_windows) <= 1:
             half_size_windows = []
         for window in self.managed_windows:
-            class_ = property_.get_window_class(window).lower()
-            layout_window(window, class_, xrandr,
-                          half_size_windows=half_size_windows)
+            layout_window(window, xrandr, half_size_windows=half_size_windows)
 
     # ------------------------ tile
     def _window_sort_key(self, window):
@@ -136,12 +133,11 @@ are implemented."""
 
     # ------------------------ horizontal split windows
     def horizontal_split_windows(self):
-        hz_combinations = list(itertools.combinations(self.managed_windows, 2))
+        hz_combinations = list(itertools.combinations(self.sorted_managed_windows, 2))
         self.last_index_hz += 1
         if self.last_index_hz >= len(hz_combinations):
             self.last_index_hz = 0
-        hz_combinations[self.last_index_hz]
-        windows = sorted(hz_combinations[self.last_index_hz], key=self._window_sort_key)
+        windows = hz_combinations[self.last_index_hz]
         self._tile_windows(windows=windows,
                            xrandr=self.displaysize.create_xrandr_request())
         # trick to use `select_last_window` between `windows`
@@ -150,4 +146,4 @@ are implemented."""
             self.managed_windows.pop(self.managed_windows.index(windows[1]))
         )
         self.select_window(windows[0])
-        map(lambda w: w.configure(stack_mode=X.Above), windows)
+        [window.raise_window() for window in windows]

@@ -16,17 +16,28 @@ basic functions are implemented."""
         self.frame_window = frame_window
         self.pointer = pointer
 
+        # windows in managed_windows is sorted by recently focused on
         self.managed_windows = []
 
     # ------------------------
-    def is_managed(self, window=None, window_class=None):
+    def is_managed(self,
+                   window=None,
+                   window_class=None):
         if window is not None:
             return window in self.managed_windows
-        elif window is None and window_class is not None:
+        elif window_class is not None:
             for window in self.managed_windows:
                 if window_class in property_.get_window_class(window).lower():
                     return window
         return False
+
+    @property
+    def sorted_managed_windows(self):
+        """Return sorted managed_windows. Because the order of managed_windows
+        is changed even if the elements do not change.
+
+        """
+        return list(sorted(self.managed_windows, key=lambda window: window.id))
 
     @property
     def current_focused_window(self):
@@ -56,8 +67,8 @@ basic functions are implemented."""
             attrs = window.get_attributes()
         except Xlib.error.BadWindow:
             return
-        # skip if the window should not be intercepted by window manager/
-        # skip if the window is under our control
+        # skip if the window should not be intercepted by window
+        # manager or the window is under our control
         # TODO: need check is managed?
         if attrs.override_redirect or self.is_managed(window):
             return
@@ -111,7 +122,7 @@ basic functions are implemented."""
         if not self.managed_windows:
             return
         # sort active windows with their geometries
-        windows = sorted(self.managed_windows, key=_sort_key)
+        windows = sorted(self.sorted_managed_windows, key=_sort_key)
         if reverse:
             windows = list(reversed(windows))
         try:
