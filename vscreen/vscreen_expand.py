@@ -140,7 +140,7 @@ class HorizontalSplitWindow(VscreenExapndBase):
         self.last_index_hz = 0
 
     def horizontal_split_windows(self):
-        hz_combinations = list(itertools.combinations(self.sorted_managed_windows, 2))
+        hz_combinations = list(itertools.combinations(self.managed_windows.sorted(), 2))
         self.last_index_hz += 1
         if self.last_index_hz >= len(hz_combinations):
             self.last_index_hz = 0
@@ -149,9 +149,7 @@ class HorizontalSplitWindow(VscreenExapndBase):
                            xrandr=self.displaysize.create_xrandr_request())
         # trick to use `select_last_window` between `windows`
         # move the current window to last of managed_windows
-        self.managed_windows.append(
-            self.managed_windows.pop(self.managed_windows.index(windows[1]))
-        )
+        self.managed_windows.move_to_end(windows[1])
         self.select_window(windows[0])
         [window.raise_window() for window in windows]
 

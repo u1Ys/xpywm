@@ -17,7 +17,7 @@ basic functions are implemented."""
         self.pointer = pointer
 
         # windows in managed_windows is sorted by recently focused on
-        self.managed_windows = []
+        self.managed_windows = WindowList()
 
     # ------------------------
     def is_managed(self,
@@ -30,14 +30,6 @@ basic functions are implemented."""
                 if window_class in property_.get_window_class(window).lower():
                     return window
         return False
-
-    @property
-    def sorted_managed_windows(self):
-        """Return sorted managed_windows. Because the order of managed_windows
-        is changed even if the elements do not change.
-
-        """
-        return list(sorted(self.managed_windows, key=lambda window: window.id))
 
     @property
     def current_focused_window(self):
@@ -99,9 +91,7 @@ basic functions are implemented."""
         window.set_input_focus(X.RevertToParent, 0)
         self.frame_window.draw_frame_windows(window)
         # move the current window to last of managed_windows
-        self.managed_windows.append(
-            self.managed_windows.pop(self.managed_windows.index(window))
-        )
+        self.managed_windows.move_to_end(window)
 
     def select_window(self, window):
         """Change the active window to WINDOW.  The active window is raised
@@ -122,7 +112,7 @@ basic functions are implemented."""
         if not self.managed_windows:
             return
         # sort active windows with their geometries
-        windows = sorted(self.sorted_managed_windows, key=_sort_key)
+        windows = sorted(self.managed_windows.sorted(), key=_sort_key)
         if reverse:
             windows = list(reversed(windows))
         try:
@@ -144,3 +134,19 @@ basic functions are implemented."""
             return False
         self.select_window(window)
         return True
+
+
+class WindowList(list):
+    def move_to_end(self, elem):
+        index = self.index(elem)
+        self.append(self.pop(index))
+
+    def sorted(self):
+        """Returns a sorted list. This method is used for *sorting*. The
+        reason is that Python sorting depends on the order of the
+        source iterators (for example, when the values are the same),
+        but this list is often reordered.
+
+        """
+        return list(sorted(self,
+                           key=lambda window: window.id))
