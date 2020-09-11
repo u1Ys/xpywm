@@ -9,20 +9,19 @@ from .. import configure
 from ..util import property_
 
 
-class VscreenExpand(Vscreen):
-    """Manage windows within a single vscreen (virtual screen). Here, the
-extended functions using the basic functions implemented in VScreen
-are implemented."""
-
+class VscreenExapndBase(Vscreen):
     def __init__(self, displaysize, *args):
         super().__init__(*args)
 
         self.displaysize = displaysize
 
-        self.unmaximized_window_geometries = {}
-        self.last_index_hz = 0
 
-    # ------------------------ maximize
+class MaximizeWindow(VscreenExapndBase):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+        self.unmaximized_window_geometries = {}
+
     def maximize_window(self, window, xrandr, force_primary=False):
         """Resize the geometry of the window WINDOW to cover the screen
         horizontally and/or vertically."""
@@ -40,8 +39,8 @@ are implemented."""
         """Check if the window WINDOW seems to have been maximized."""
         geom = window.get_geometry()
         return {'x': geom.x, 'y': geom.y,
-                'width': geom.width, 'height': geom.height} \
-                == xrandr.get_maximized_geometry(force_primary=self._force_primary(window, xrandr))
+                'width': geom.width, 'height': geom.height} == \
+                xrandr.get_maximized_geometry(force_primary=self._force_primary(window, xrandr))
 
     def _save_window_geometry(self, window):
         """Save the current geometry of the window WINDOW."""
@@ -60,7 +59,8 @@ are implemented."""
             self._save_window_geometry(window)
             self.maximize_window(window, xrandr, force_primary=self._force_primary(window, xrandr))
 
-    # ------------------------ layout
+
+class LayoutWindow(VscreenExapndBase):
     def layout_all_windows(self):
         def layout_window(window, xrandr, half_size_windows=[]):
             for regexp, geom in configure.LAYOUT_RULES.items():
@@ -83,7 +83,8 @@ are implemented."""
         for window in self.managed_windows:
             layout_window(window, xrandr, half_size_windows=half_size_windows)
 
-    # ------------------------ tile
+
+class TileWindow(MaximizeWindow):
     def _window_sort_key(self, window):
         # force Emacs be the last, movie be the first in the
         # window list
@@ -131,7 +132,13 @@ are implemented."""
         if self.is_managed(window):
             self.select_window(window)
 
-    # ------------------------ horizontal split windows
+
+class HorizontalSplitWindow(VscreenExapndBase):
+    def __init__(self, *args):
+        super().__init__(*args)
+
+        self.last_index_hz = 0
+
     def horizontal_split_windows(self):
         hz_combinations = list(itertools.combinations(self.sorted_managed_windows, 2))
         self.last_index_hz += 1
@@ -147,3 +154,10 @@ are implemented."""
         )
         self.select_window(windows[0])
         [window.raise_window() for window in windows]
+
+
+class VscreenExpand(HorizontalSplitWindow,
+                    TileWindow,
+                    LayoutWindow,
+                    MaximizeWindow):
+    pass
