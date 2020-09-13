@@ -123,7 +123,8 @@ KEY_HANDLER = {
     # window layouting
     'comma': {'modifier': X.Mod1Mask | X.ControlMask,
               'type': 'vscreen',
-              'method': 'layout_all_windows'},
+              'method': 'layout_all_windows',
+              'first_arg_window': True},
     'period': {'modifier': X.Mod1Mask | X.ControlMask,
                'type': 'vscreen',
                'method': 'tile_all_windows',
