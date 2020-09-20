@@ -41,32 +41,32 @@ class MaximizeWindow(VscreenExapndBase):
             return
         window.configure(**xrandr.get_maximized_geometry(force_primary=force_primary))
 
-    def _force_primary(self, window, xrandr):
-        geom = window.get_geometry()
+    def _is_force_primary(self, window, geom, xrandr):
         return xrandr.exsist_expand_display and \
             geom.x <= xrandr.get_expand_display_x()
 
-    def _is_maximized(self, window, xrandr):
+    def _is_maximized(self, window, geom, xrandr):
         """Check if the window WINDOW seems to have been maximized."""
-        geom = window.get_geometry()
         return {'x': geom.x, 'y': geom.y, 'width': geom.width, 'height': geom.height} \
-            == xrandr.get_maximized_geometry(force_primary=self._force_primary(window, xrandr))
+            == xrandr.get_maximized_geometry(force_primary=self._is_force_primary(window, geom, xrandr))
 
-    def _save_window_geometry(self, window):
+    def _save_window_geometry(self, window, geom):
         """Save the current geometry of the window WINDOW."""
-        geom = window.get_geometry()
         self.unmaximized_window_geometries[window] = {'x': geom.x, 'y': geom.y,
                                                       'width': geom.width, 'height': geom.height}
 
     def _toggle_maximize_window(self, window):
+        geom = property_.get_window_geometry(window)
+        if geom is None:
+            return
         xrandr = self.displaysize.create_xrandr_request()
         unmaximized_geometry = self.unmaximized_window_geometries.get(window, None)
-        if self._is_maximized(window, xrandr) and unmaximized_geometry is not None:
+        if self._is_maximized(window, geom, xrandr) and unmaximized_geometry is not None:
             window.configure(**unmaximized_geometry)
             del self.unmaximized_window_geometries[window]
         else:
-            self._save_window_geometry(window)
-            self.maximize_window(window, xrandr, force_primary=self._force_primary(window, xrandr))
+            self._save_window_geometry(window, geom)
+            self.maximize_window(window, xrandr, force_primary=self._is_force_primary(window, geom, xrandr))
 
     def toggle_maximize_window(self, window):
         self.exec_method_with_hook(self._toggle_maximize_window, window,

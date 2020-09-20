@@ -4,6 +4,8 @@ import Xlib
 from Xlib import X
 
 from .. import configure
+from ..util import property_
+
 
 class FrameWindow():
     def __init__(self, screen):
@@ -11,7 +13,7 @@ class FrameWindow():
         self.frame_windows = {}
         self.framed_window = None
 
-    def create_frame_windows (self):
+    def create_frame_windows(self):
         """Create and map a window frame consisting of four windows."""
         colormap = self.screen.default_colormap
         # create four frame windows
@@ -33,9 +35,8 @@ class FrameWindow():
 
     def draw_frame_windows(self, framed_window):
         """Draw a frame window surrounding a windwow WINDOW."""
-        try:
-            geom = framed_window.get_geometry()
-        except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
+        geom = property_.get_window_geometry(framed_window)
+        if geom is None:
             return
 
         self.framed_window = framed_window

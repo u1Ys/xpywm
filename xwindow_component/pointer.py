@@ -47,9 +47,8 @@ class Pointer():
                 1: -1 * configure.POINTER_OFFSET,
             }.get(pval, 0)
 
-        try:
-            geom = window.get_geometry()
-        except Xlib.error.BadDrawable:
+        geom = property_.get_window_geometry(window)
+        if geom is None:
             return
         p_geom = self.geometries.get(window, configure.DEFAULT_POINTER_GEOMETRY)
         # MEMO: window.warp_pointer()
@@ -77,14 +76,11 @@ class Pointer():
         def is_bound(lower, value, upper):
             return lower <= value and value <= upper
 
-        try:
-            geom = window.get_geometry()
-            x_window, y_window = geom_abs['x'] - geom.x, geom_abs['y'] - geom.y
-        # Xlib.error.BadDrawable -> window.get_geometry()
-        # TypeError -> geom_abs is None
-        except (Xlib.error.BadDrawable, TypeError):
+        geom = property_.get_window_geometry(window)
+        if geom is None or geom_abs is None:
             return
-        p_x, p_y = x_window / geom.width, y_window / geom.height
+        x_in_window, y_in_window = geom_abs['x'] - geom.x, geom_abs['y'] - geom.y
+        p_x, p_y = x_in_window / geom.width, y_in_window / geom.height
         if any(map(lambda p: not is_bound(0, p, 1), [p_x, p_y])):
             return
         self.geometries[window] = {'x': p_x, 'y': p_y}

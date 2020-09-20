@@ -3,6 +3,8 @@
 import re
 import subprocess
 
+import Xlib
+
 MOVIE_WINDOW_REGEXP = r'mplayer|ニコニコ動画|ニコニコ生放送|youtube|twitch|abema|openrec|prime|動画再生|(apple music)'
 BROWSER_WINDOW_REGEXP = r'chromium|chrome|firefox|vivaldi'
 
@@ -44,3 +46,15 @@ def is_movie_window(window):
 
 def is_browser_window(window):
     return re.search(BROWSER_WINDOW_REGEXP, get_window_class(window).lower())
+
+
+def get_window_geometry(window, default=None):
+    """Safe version of window.get_geometry. Return DEFAULT even if
+    window.get_geometry raised error
+
+    """
+    try:
+        geom = window.get_geometry()
+    except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
+        geom = default
+    return geom

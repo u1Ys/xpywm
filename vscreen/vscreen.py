@@ -101,24 +101,34 @@ basic functions are implemented."""
         self.pointer.move_to(window)
         self.activate_window(window)
 
-    def select_other_window(self, window=None, reverse=False):
+    def select_other_window(self, current_window=None, reverse=False):
         """Change the active window from the window WINDOW to the next one.
 
         """
-        def _sort_key(window):
-            geom = window.get_geometry()
-            return geom.x * 10000 + geom.y
-        # if no window alive, do nothing
-        if not self.managed_windows:
+        # remove invalid window which cannot get their geometry
+        windows, geoms = [], {}
+        for window in self.managed_windows.sorted():
+            geom = property_.get_window_geometry(window)
+            if geom is None:
+                continue
+            windows.append(window)
+            geoms[window] = geom
+
+        if not windows:
             return
+
         # sort active windows with their geometries
-        windows = sorted(self.managed_windows.sorted(), key=_sort_key)
+        windows = sorted(windows,
+                         key=lambda window: geoms[window].x * 10000 + geoms[window].y)
+
         if reverse:
             windows = list(reversed(windows))
         try:
-            i = windows.index(window)
+            i = windows.index(current_window)
             next_window = windows[(i + 1) % len(windows)]
-        except (IndexError, ValueError):
+        except ValueError:
+            # ValueError -> failed in windows.index(current_window),
+            # current_window isn't in windows
             next_window = windows[0]
         self.select_window(next_window)
 
