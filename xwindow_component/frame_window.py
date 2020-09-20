@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import Xlib
 from Xlib import X
 
 from .. import configure
