@@ -44,7 +44,7 @@ Y_OFFSET = 8
 VSCREEN_FILE = '/tmp/wm_vscreen_num'
 
 TRANSSET_ALPHA = '.85'
-INTRANSSET_CLS = r'mupdf|mplayer'
+INTRANSSET_CLS = r'emacs|mupdf|mplayer'
 
 POINTER_OFFSET = 16
 DEFAULT_POINTER_GEOMETRY = {'x': 1, 'y': 0}
