@@ -5,7 +5,7 @@ import re
 import subprocess
 
 from .. import configure
-from . import property_
+from . import window_property
 
 STOP_CURSOR_CLS = r'rxvt|emacs'
 
@@ -58,7 +58,7 @@ def screenshot(window='root'):
 
 # raise from: vscreen.py
 def transset(window):
-    if re.search(configure.INTRANSSET_CLS, property_.get_window_class(window).lower()) \
-       or property_.is_browser_window(window):
+    if re.search(configure.INTRANSSET_CLS, window_property.get_window_class(window).lower()) \
+       or window_property.is_browser_window(window):
         return
     os.system(f'pidof xcompmgr && transset --id {window.id} {configure.TRANSSET_ALPHA}')

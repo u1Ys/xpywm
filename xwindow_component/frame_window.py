@@ -4,7 +4,7 @@ import Xlib
 from Xlib import X
 
 from .. import configure
-from ..util import property_
+from ..util import window_property
 
 
 class FrameWindow():
@@ -35,7 +35,7 @@ class FrameWindow():
 
     def draw_frame_windows(self, framed_window):
         """Draw a frame window surrounding a windwow WINDOW."""
-        geom = property_.get_window_geometry(framed_window)
+        geom = window_property.get_window_geometry(framed_window)
         if geom is None:
             return
 

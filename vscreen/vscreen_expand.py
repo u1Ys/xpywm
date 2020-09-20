@@ -6,7 +6,7 @@ import re
 from .vscreen import Vscreen
 
 from .. import configure
-from ..util import property_
+from ..util import window_property
 
 
 class VscreenExapndBase(Vscreen):
@@ -56,7 +56,7 @@ class MaximizeWindow(VscreenExapndBase):
                                                       'width': geom.width, 'height': geom.height}
 
     def _toggle_maximize_window(self, window):
-        geom = property_.get_window_geometry(window)
+        geom = window_property.get_window_geometry(window)
         if geom is None:
             return
         xrandr = self.displaysize.create_xrandr_request()
@@ -78,7 +78,7 @@ class LayoutWindow(VscreenExapndBase):
         def layout_window(window, xrandr, half_size_windows=[]):
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
-                if re.search(regexp, property_.get_window_class(window).lower(),
+                if re.search(regexp, window_property.get_window_class(window).lower(),
                              flags=re.IGNORECASE):
                     if window in half_size_windows:
                         i = half_size_windows.index(window)
@@ -90,7 +90,7 @@ class LayoutWindow(VscreenExapndBase):
 
         xrandr = self.displaysize.create_xrandr_request()
         half_size_windows = [window for window in self.managed_windows
-                             if property_.is_browser_window(window)]
+                             if window_property.is_browser_window(window)]
         if len(half_size_windows) <= 1:
             half_size_windows = []
         for window in self.managed_windows:
@@ -104,9 +104,9 @@ class TileWindow(MaximizeWindow):
     def _window_sort_key(self, window):
         # force Emacs be the last, movie be the first in the
         # window list
-        if 'emacs' in property_.get_window_class(window).lower():
+        if 'emacs' in window_property.get_window_class(window).lower():
             return 0x7fffffff
-        elif property_.is_movie_window(window):
+        elif window_property.is_movie_window(window):
             return 0x00000000
         else:
             return window.id

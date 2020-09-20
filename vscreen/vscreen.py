@@ -4,7 +4,7 @@ import Xlib
 from Xlib import X
 
 from ..util import external_command
-from ..util import property_
+from ..util import window_property
 
 
 class Vscreen():
@@ -27,7 +27,7 @@ basic functions are implemented."""
             return window in self.managed_windows
         elif window_class is not None:
             for window in self.managed_windows:
-                if window_class in property_.get_window_class(window).lower():
+                if window_class in window_property.get_window_class(window).lower():
                     return window
         return False
 
@@ -108,7 +108,7 @@ basic functions are implemented."""
         # remove invalid window which cannot get their geometry
         windows, geoms = [], {}
         for window in self.managed_windows.sorted():
-            geom = property_.get_window_geometry(window)
+            geom = window_property.get_window_geometry(window)
             if geom is None:
                 continue
             windows.append(window)

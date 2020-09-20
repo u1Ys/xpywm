@@ -6,7 +6,7 @@ import Xlib
 
 from .. import configure
 from ..util import external_command
-from ..util import property_
+from ..util import window_property
 
 
 class Pointer():
@@ -47,7 +47,7 @@ class Pointer():
                 1: -1 * configure.POINTER_OFFSET,
             }.get(pval, 0)
 
-        geom = property_.get_window_geometry(window)
+        geom = window_property.get_window_geometry(window)
         if geom is None:
             return
         p_geom = self.geometries.get(window, configure.DEFAULT_POINTER_GEOMETRY)
@@ -76,7 +76,7 @@ class Pointer():
         def is_bound(lower, value, upper):
             return lower <= value and value <= upper
 
-        geom = property_.get_window_geometry(window)
+        geom = window_property.get_window_geometry(window)
         if geom is None or geom_abs is None:
             return
         x_in_window, y_in_window = geom_abs['x'] - geom.x, geom_abs['y'] - geom.y
@@ -108,6 +108,6 @@ class Pointer():
 
     def cursor_set(self, window):
         m = re.search(configure.STOP_CURSOR_CLS,
-                      property_.get_window_class(window).lower())
+                      window_property.get_window_class(window).lower())
         external_command.enable_touchpad(not m)
         self.show_cursor(not m)
