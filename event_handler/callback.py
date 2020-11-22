@@ -7,6 +7,7 @@ import sys
 from ..util import external_command
 from ..util.log import error, debug
 
+
 class Callback():
     def __init__(self, vscreen_manager):
         self.vscreen_manager = vscreen_manager
@@ -56,5 +57,6 @@ class Callback():
             pass
 
     def restart(self):
+        self.vscreen_manager.all_window_move_init_vscreen()
         debug('restarting %s...', sys.argv[0])
         os.execvp(sys.argv[0], [sys.argv[0]])
