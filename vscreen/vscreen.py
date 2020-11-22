@@ -110,6 +110,7 @@ basic functions are implemented."""
         for window in self.managed_windows.sorted():
             geom = window_property.get_window_geometry(window)
             if geom is None:
+                self.unmanage_window(window)
                 continue
             windows.append(window)
             geoms[window] = geom
