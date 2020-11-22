@@ -58,21 +58,21 @@ basic functions are implemented."""
         try:
             attrs = window.get_attributes()
         except Xlib.error.BadWindow:
-            return
-        # skip if the window should not be intercepted by window
-        # manager or the window is under our control
-        # TODO: need check is managed?
+            return False
+        # skip if the window should not be managed by window manager
+        # or the window is already under our control
         if attrs.override_redirect or self.is_managed(window):
-            return
+            return False
         self.managed_windows.append(window)
         window.map()
         mask = X.EnterWindowMask | X.LeaveWindowMask
         window.change_attributes(event_mask=mask)
         external_command.transset(window)
 
+        return True
+
     def unmanage_window(self, window):
         """The window WINDOW leaves from the control of the window manager."""
-        # TODO: need check is managed?
         if not self.is_managed(window):
             return
         self.managed_windows.remove(window)

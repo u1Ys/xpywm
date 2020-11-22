@@ -3,6 +3,8 @@
 import itertools
 import re
 
+from Xlib import X
+
 from .vscreen import Vscreen
 
 from .. import configure
@@ -171,8 +173,79 @@ class HorizontalSplitWindow(VscreenExapndBase):
         [window.raise_window() for window in windows]
 
 
+class PictureInPicture(VscreenExapndBase):
+    PWIDTH = .25
+    PHEIGHT = .25
+
+    def __init__(self, *args):
+        super().__init__(*args)
+
+        # pip = PictureInPicture
+        self.pip_window = None
+        self.pip_window_geometry = None
+
+    # ------------------------
+    def open(self):
+        super().open()
+        if self.pip_window is not None:
+            self.pip_window.map()
+
+    def close(self):
+        super().close()
+        if self.pip_window is not None:
+            self.pip_window.unmap()
+
+    # ------------------------
+    def manage_window(self, window):
+        if window == self.pip_window:
+            return
+        return super().manage_window(window)
+
+    def select_window(self, window):
+        super().select_window(window)
+        if self.pip_window is not None:
+            self.pip_window.configure(stack_mode=X.Above)
+
+    # ------------------------
+    def manage_pip_window(self, window):
+        geom = window_property.get_window_geometry(window)
+        if geom is None:
+            return
+
+        self.pip_window = window
+        self.pip_window_geometry = {'x': geom.x, 'y': geom.y,
+                                    'width': geom.width, 'height': geom.height}
+
+        self.unmanage_window(window)
+        xrandr = self.displaysize.create_xrandr_request()
+        window.configure(**xrandr.convert_geomtry(px=(1 - PictureInPicture.PWIDTH),
+                                                  py=(1 - PictureInPicture.PHEIGHT),
+                                                  pwidth=PictureInPicture.PWIDTH,
+                                                  pheight=PictureInPicture.PHEIGHT,
+                                                  force_primary=True),
+                         stack_mode=X.Above)
+
+    def unmanage_pip_window(self):
+        pip_window, pip_window_geometry = self.pip_window, self.pip_window_geometry
+        self.pip_window, self.pip_window_geometry = None, None
+
+        success_manage_window = self.manage_window(pip_window)
+        if success_manage_window:
+            pip_window.configure(**pip_window_geometry)
+            self.select_window(pip_window)
+
+    def toggle_pip_window(self, window=None):
+        if self.pip_window is None:
+            if self.pip_window is not None:
+                return
+            self.manage_pip_window(window)
+        else:
+            self.unmanage_pip_window()
+
+
 class VscreenExpand(HorizontalSplitWindow,
                     TileWindow,
                     LayoutWindow,
-                    MaximizeWindow):
+                    MaximizeWindow,
+                    PictureInPicture):
     pass
