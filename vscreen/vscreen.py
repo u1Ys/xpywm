@@ -37,13 +37,13 @@ basic functions are implemented."""
 
     # ------------------------
     def open(self):
+        for window in self.managed_windows:
+            window.map()
+
         if self.managed_windows:
             self.pointer.move_to(self.current_focused_window)
         else:
             self.pointer.move(self.pointer.default_geometry)
-
-        for window in self.managed_windows:
-            window.map()
 
     def close(self):
         for window in self.managed_windows:
