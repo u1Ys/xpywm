@@ -209,6 +209,10 @@ KEY_HANDLER = {
             'os_command': 'control-mplayer pt_step  1'},
     'F12': {'modifier': X.ShiftMask,
             'os_command': 'pidof mplayer && control-mplayer quit || play-music -ar'},
+    'Left': {'modifier': X.Mod1Mask | X.ControlMask,
+             'os_command': 'pidof mplayer && control-mplayer seek -30'},
+    'Right': {'modifier': X.Mod1Mask | X.ControlMask,
+              'os_command': 'pidof mplayer && control-mplayer seek 30'},
     # os-command - network
     'XF86WLAN': {'modifier': X.NONE,
                  'os_command': 'pidof wpa_supplicant && sudo wi_cli stop || sudo wi_cli start'},

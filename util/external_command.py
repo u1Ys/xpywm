@@ -53,7 +53,7 @@ def enable_touchpad(bool_):
 
 
 def screenshot(window='root'):
-    os.system(f'import -window {window} /tmp/`date +%y%m%d-%H:%M:%S`.png')
+    os.system(f'import -window {window} /tmp/`date +%y%m%d-%H%M%S`.png')
 
 
 # raise from: vscreen.py
