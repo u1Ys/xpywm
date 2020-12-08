@@ -88,7 +88,7 @@ class _XRandrRequest():
         return max([crtcinfo['x'] for crtcinfo in self.connected_crtcinfos])
 
     @property
-    def exsist_expand_display(self):
+    def exist_expand_display(self):
         return not self.get_expand_display_x() == 0
 
     def get_screen_size(self, force_primary=False):
@@ -99,15 +99,15 @@ class _XRandrRequest():
                 return width, height
         return width, height
 
-    def get_screen_xy(self, exsist_xpymon=True):
-        # exsist_xpymon: false = expand-display
-        x = 0 if exsist_xpymon else self.get_expand_display_x()
-        y = configure.Y_OFFSET if exsist_xpymon else 0
+    def get_screen_xy(self, exist_xpymon=True):
+        # exist_xpymon: false = expand-display
+        x = 0 if exist_xpymon else self.get_expand_display_x()
+        y = configure.Y_OFFSET if exist_xpymon else 0
         return x, y
 
     def get_maximized_geometry(self, force_primary=False):
-        exsist_xpymon = force_primary or not self.exsist_expand_display
-        x, y = self.get_screen_xy(exsist_xpymon)
+        exist_xpymon = force_primary or not self.exist_expand_display
+        x, y = self.get_screen_xy(exist_xpymon)
         width, height = self.get_screen_size(force_primary)
         return {'x': x, 'y': y, 'width': width, 'height': height - y}
 

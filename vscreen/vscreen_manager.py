@@ -29,7 +29,7 @@ vscreens."""
                 return vscreen
         return None
 
-    def exsist(self, window):
+    def exist(self, window):
         return self.is_vscreen_of(window)
 
     def find_managed_class_window(self, window_class):

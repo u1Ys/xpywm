@@ -27,16 +27,16 @@ class WindowManager():
 
         self.event_handler = EventHandler(self.display, self.screen, self.vscreen_manager)
 
-        self._manage_exsist_windows()
+        self._manage_exist_windows()
 
         # create frame windows here because frame windows is managed
-        # if create them before _manage_exsist_windows()
+        # if create them before _manage_exist_windows()
         self.frame_window.create_frame_windows()
         # choose first window
         self.vscreen_manager.current_vscreen.select_other_window()
 
-    def _manage_exsist_windows(self):
-        # manage exsist windows
+    def _manage_exist_windows(self):
+        # manage exist windows
         for child in self.screen.root.query_tree().children:
             if child.get_attributes().map_state:
                 self.vscreen_manager.current_vscreen.manage_window(child)

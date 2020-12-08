@@ -92,7 +92,7 @@ class EventHandler():
         with the button 3.  All mouse pointer motion events are captured until
         the button is relased."""
         window = event.child
-        if not self.vscreen_manager.exsist(window):
+        if not self.vscreen_manager.exist(window):
             return
 
         self.screen.root.grab_pointer(
@@ -165,7 +165,7 @@ class EventHandler():
         """Event handler for LeaveNotify events."""
         window = event.window
         pointer = self.vscreen_manager.pointer
-        if self.vscreen_manager.exsist(window):
+        if self.vscreen_manager.exist(window):
             pointer.save_geometry_at(window, pointer.pop_temporary_geometry())
 
     def handle_destroy_notify(self, event):

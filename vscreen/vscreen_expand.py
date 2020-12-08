@@ -44,7 +44,7 @@ class MaximizeWindow(VscreenExapndBase):
         window.configure(**xrandr.get_maximized_geometry(force_primary=force_primary))
 
     def _is_force_primary(self, window, geom, xrandr):
-        return xrandr.exsist_expand_display and \
+        return xrandr.exist_expand_display and \
             geom.x <= xrandr.get_expand_display_x()
 
     def _is_maximized(self, window, geom, xrandr):
@@ -138,7 +138,7 @@ class TileWindow(MaximizeWindow):
 
     def _tile_all_windows(self):
         xrandr = self.displaysize.create_xrandr_request()
-        if xrandr.exsist_expand_display:
+        if xrandr.exist_expand_display:
             windows = sorted(self.managed_windows, key=self._window_sort_key)
             n_windows_on_primary = int((len(windows) + 1) / 2)
             # assume expand display is larger than primary one
