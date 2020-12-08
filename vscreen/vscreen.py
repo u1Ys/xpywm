@@ -7,7 +7,16 @@ from ..util import external_command
 from ..util import window_property
 
 
-class Vscreen():
+class VscreenBase():
+    @staticmethod
+    def execute_when_window_is_managed(method):
+        def wrapper(self, window, *args, **kargs):
+            if self.is_managed(window):
+                method(self, window, *args, **kargs)
+        return wrapper
+
+
+class Vscreen(VscreenBase):
     """Manage windows within a single vscreen (virtual screen). Here, only
 basic functions are implemented."""
 
@@ -71,19 +80,18 @@ basic functions are implemented."""
 
         return True
 
+    @VscreenBase.execute_when_window_is_managed
     def unmanage_window(self, window):
         """The window WINDOW leaves from the control of the window manager."""
-        if not self.is_managed(window):
-            return
         self.managed_windows.remove(window)
 
+    @VscreenBase.execute_when_window_is_managed
     def destroy_window(self, window):
         """Kill the window WINDOW."""
-        if not self.is_managed(window):
-            return
         window.destroy()
         self.unmanage_window(window)
 
+    @VscreenBase.execute_when_window_is_managed
     def activate_window(self, window):
         """Activate the input to the window WINDOW and the window frame is
         displayed."""
@@ -93,6 +101,7 @@ basic functions are implemented."""
         # move the current window to last of managed_windows
         self.managed_windows.move_to_end(window)
 
+    @VscreenBase.execute_when_window_is_managed
     def select_window(self, window):
         """Change the active window to WINDOW.  The active window is raised
         and activated.  The pointer is moved to the window.
@@ -101,26 +110,20 @@ basic functions are implemented."""
         self.pointer.move_to(window)
         self.activate_window(window)
 
+    @window_property.return_with_get_geometry_exception
     def select_other_window(self, current_window=None, reverse=False):
         """Change the active window from the window WINDOW to the next one.
 
         """
-        # remove invalid window which cannot get their geometry
-        windows, geoms = [], {}
-        for window in self.managed_windows.sorted():
-            geom = window_property.get_window_geometry(window)
-            if geom is None:
-                self.unmanage_window(window)
-                continue
-            windows.append(window)
-            geoms[window] = geom
+        def _sort_key(window):
+            geom = window.get_geometry()
+            return geom.x * 10000 + geom.y
 
-        if not windows:
+        # fix integrity is only here
+        self.managed_windows.fix_integrity()
+        if not self.managed_windows:
             return
-
-        # sort active windows with their geometries
-        windows = sorted(windows,
-                         key=lambda window: geoms[window].x * 10000 + geoms[window].y)
+        windows = sorted(self.managed_windows.sorted(), key=_sort_key)
 
         if reverse:
             windows = list(reversed(windows))
@@ -153,11 +156,22 @@ class WindowList(list):
         self.append(self.pop(index))
 
     def sorted(self):
-        """Returns a sorted list. This method is used for *sorting*. The
+        '''Returns a sorted list. This method is used for *sorting*. The
         reason is that Python sorting depends on the order of the
         source iterators (for example, when the values are the same),
         but this list is often reordered.
 
-        """
+        '''
         return list(sorted(self,
                            key=lambda window: window.id))
+
+    def fix_integrity(self):
+        '''Remove invalid window which can't be got geometry from managed
+        windows
+
+        '''
+        for window in self:
+            try:
+                window.get_geometry()
+            except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
+                self.remove(window)

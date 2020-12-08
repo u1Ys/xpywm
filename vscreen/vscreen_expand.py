@@ -17,17 +17,16 @@ class VscreenExapndBase(Vscreen):
 
         self.displaysize = displaysize
 
-    def exec_method_with_hook(self, method, window, method_args=[]):
-        """Execute the METHOD and hooks before and after executing the
-        METHOD. It is not mandatory to use this method for the
-        callback method.
+    @staticmethod
+    def select_window_at_last(method):
+        """Decorator to execute the METHOD and select the window after
+        executing the METHOD.
 
         """
-        method(*method_args)
-        # after changing the layout, select the window selected before
-        # changing the layout
-        if self.is_managed(window):
+        def wrapper(self, window, *args, **kargs):
+            method(self, window, *args, **kargs)
             self.select_window(window)
+        return wrapper
 
 
 class MaximizeWindow(VscreenExapndBase):
@@ -36,11 +35,10 @@ class MaximizeWindow(VscreenExapndBase):
 
         self.unmaximized_window_geometries = {}
 
+    @Vscreen.execute_when_window_is_managed
     def maximize_window(self, window, xrandr, force_primary=False):
         """Resize the geometry of the window WINDOW to cover the screen
         horizontally and/or vertically."""
-        if not self.is_managed(window):
-            return
         window.configure(**xrandr.get_maximized_geometry(force_primary=force_primary))
 
     def _is_force_primary(self, window, geom, xrandr):
@@ -57,10 +55,11 @@ class MaximizeWindow(VscreenExapndBase):
         self.unmaximized_window_geometries[window] = {'x': geom.x, 'y': geom.y,
                                                       'width': geom.width, 'height': geom.height}
 
-    def _toggle_maximize_window(self, window):
-        geom = window_property.get_window_geometry(window)
-        if geom is None:
-            return
+    @Vscreen.execute_when_window_is_managed
+    @window_property.return_with_get_geometry_exception
+    @VscreenExapndBase.select_window_at_last
+    def toggle_maximize_window(self, window):
+        geom = window.get_geometry()
         xrandr = self.displaysize.create_xrandr_request()
         unmaximized_geometry = self.unmaximized_window_geometries.get(window, None)
         if self._is_maximized(window, geom, xrandr) and unmaximized_geometry is not None:
@@ -70,13 +69,11 @@ class MaximizeWindow(VscreenExapndBase):
             self._save_window_geometry(window, geom)
             self.maximize_window(window, xrandr, force_primary=self._is_force_primary(window, geom, xrandr))
 
-    def toggle_maximize_window(self, window):
-        self.exec_method_with_hook(self._toggle_maximize_window, window,
-                                   method_args=[window])
-
 
 class LayoutWindow(VscreenExapndBase):
-    def _layout_all_windows(self):
+    @VscreenExapndBase.select_window_at_last
+    def layout_all_windows(self, selected_window):
+        '''selected_window argument is used in decorator'''
         def layout_window(window, xrandr, half_size_windows=[]):
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
@@ -97,9 +94,6 @@ class LayoutWindow(VscreenExapndBase):
             half_size_windows = []
         for window in self.managed_windows:
             layout_window(window, xrandr, half_size_windows=half_size_windows)
-
-    def layout_all_windows(self, window=None):
-        self.exec_method_with_hook(self._layout_all_windows, window)
 
 
 class TileWindow(MaximizeWindow):
@@ -136,7 +130,9 @@ class TileWindow(MaximizeWindow):
                 height += rest_height
             window.configure(**xrandr.convert_geomtry(x, y, width, height, force_primary))
 
-    def _tile_all_windows(self):
+    @VscreenExapndBase.select_window_at_last
+    def tile_all_windows(self, selected_window):
+        '''selected_window argument is used in decorator'''
         xrandr = self.displaysize.create_xrandr_request()
         if xrandr.exist_expand_display:
             windows = sorted(self.managed_windows, key=self._window_sort_key)
@@ -147,9 +143,6 @@ class TileWindow(MaximizeWindow):
             self._tile_windows(windows_on_expand, xrandr, force_primary=False)
         else:
             self._tile_windows(self.managed_windows, xrandr)
-
-    def tile_all_windows(self, window=None):
-        self.exec_method_with_hook(self._tile_all_windows, window)
 
 
 class HorizontalSplitWindow(VscreenExapndBase):
@@ -207,10 +200,9 @@ class PictureInPicture(VscreenExapndBase):
             self.pip_window.configure(stack_mode=X.Above)
 
     # ------------------------
+    @window_property.return_with_get_geometry_exception
     def manage_pip_window(self, window):
-        geom = window_property.get_window_geometry(window)
-        if geom is None:
-            return
+        geom = window.get_geometry()
 
         self.pip_window = window
         self.pip_window_geometry = {'x': geom.x, 'y': geom.y,

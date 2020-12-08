@@ -48,13 +48,13 @@ def is_browser_window(window):
     return re.search(BROWSER_WINDOW_REGEXP, get_window_class(window).lower())
 
 
-def get_window_geometry(window, default=None):
-    """Safe version of window.get_geometry. Return DEFAULT even if
-    window.get_geometry raised error
+def return_with_get_geometry_exception(method):
+    '''Decorator to quit method when method for invalid window is called
 
-    """
-    try:
-        geom = window.get_geometry()
-    except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
-        geom = default
-    return geom
+    '''
+    def wrapper(self, *args, **kargs):
+        try:
+            method(self, *args, **kargs)
+        except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
+            return
+    return wrapper

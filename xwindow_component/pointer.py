@@ -2,8 +2,6 @@
 
 import re
 
-import Xlib
-
 from .. import configure
 from ..util import external_command
 from ..util import window_property
@@ -40,6 +38,7 @@ class Pointer():
         self.display.warp_pointer(geometry['x'] - current_geometry['x'],
                                   geometry['y'] - current_geometry['y'])
 
+    @window_property.return_with_get_geometry_exception
     def move_to(self, window):
         def shift(pval):
             return {
@@ -47,9 +46,7 @@ class Pointer():
                 1: -1 * configure.POINTER_OFFSET,
             }.get(pval, 0)
 
-        geom = window_property.get_window_geometry(window)
-        if geom is None:
-            return
+        geom = window.get_geometry()
         p_geom = self.geometries.get(window, configure.DEFAULT_POINTER_GEOMETRY)
         # MEMO: window.warp_pointer()
         self.move({
@@ -65,6 +62,7 @@ class Pointer():
         self.last_geometry = None
         return last_geometry
 
+    @window_property.return_with_get_geometry_exception
     def save_geometry_at(self, window, geom_abs):
         """Save the relative geometry of the pointer in the window. Because
         the window size changes often, save the *relative* position of
@@ -76,8 +74,8 @@ class Pointer():
         def is_bound(lower, value, upper):
             return lower <= value and value <= upper
 
-        geom = window_property.get_window_geometry(window)
-        if geom is None or geom_abs is None:
+        geom = window.get_geometry()
+        if geom_abs is None:
             return
         x_in_window, y_in_window = geom_abs['x'] - geom.x, geom_abs['y'] - geom.y
         p_x, p_y = x_in_window / geom.width, y_in_window / geom.height

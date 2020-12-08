@@ -142,8 +142,7 @@ class EventHandler():
         """Event handler for UnmapNotify events."""
         window = event.window
         vscreen = self.vscreen_manager.current_vscreen
-        if vscreen.is_managed(window):
-            vscreen.unmanage_window(window)
+        vscreen.unmanage_window(window)
         self.vscreen_manager.frame_window.clear_frame_window(window)
 
     def handle_map_notify(self, event):
@@ -158,8 +157,7 @@ class EventHandler():
         """Event handler for EnterNotify events."""
         window = event.window
         vscreen = self.vscreen_manager.current_vscreen
-        if vscreen.is_managed(window):
-            vscreen.activate_window(window)
+        vscreen.activate_window(window)
 
     def handle_leave_notify(self, event):
         """Event handler for LeaveNotify events."""

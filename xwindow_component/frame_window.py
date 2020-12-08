@@ -32,12 +32,10 @@ class FrameWindow():
             window.map()
             self.frame_windows[side] = window
 
+    @window_property.return_with_get_geometry_exception
     def draw_frame_windows(self, framed_window):
         """Draw a frame window surrounding a windwow WINDOW."""
-        geom = window_property.get_window_geometry(framed_window)
-        if geom is None:
-            return
-
+        geom = framed_window.get_geometry()
         self.framed_window = framed_window
 
         for side in ['frame_l', 'frame_r', 'frame_u', 'frame_d']:
