@@ -36,19 +36,17 @@ class MaximizeWindow(VscreenExapndBase):
         self.unmaximized_window_geometries = {}
 
     @Vscreen.execute_when_window_is_managed
-    def maximize_window(self, window, xrandr, force_primary=False):
+    def maximize_window(self, window, xrandr, output=None):
         """Resize the geometry of the window WINDOW to cover the screen
         horizontally and/or vertically."""
-        window.configure(**xrandr.get_maximized_geometry(force_primary=force_primary))
-
-    def _is_force_primary(self, window, geom, xrandr):
-        return xrandr.exist_expand_display and \
-            geom.x <= xrandr.get_expand_display_x()
+        _specify_window = window if output is None else None
+        window.configure(**xrandr.get_maximized_geometry(window=_specify_window,
+                                                         output=output))
 
     def _is_maximized(self, window, geom, xrandr):
         """Check if the window WINDOW seems to have been maximized."""
         return {'x': geom.x, 'y': geom.y, 'width': geom.width, 'height': geom.height} \
-            == xrandr.get_maximized_geometry(force_primary=self._is_force_primary(window, geom, xrandr))
+            == xrandr.get_maximized_geometry(window=window)
 
     def _save_window_geometry(self, window, geom):
         """Save the current geometry of the window WINDOW."""
@@ -67,13 +65,13 @@ class MaximizeWindow(VscreenExapndBase):
             del self.unmaximized_window_geometries[window]
         else:
             self._save_window_geometry(window, geom)
-            self.maximize_window(window, xrandr, force_primary=self._is_force_primary(window, geom, xrandr))
+            self.maximize_window(window, xrandr)
 
 
 class LayoutWindow(VscreenExapndBase):
     @VscreenExapndBase.select_window_at_last
     def layout_all_windows(self, selected_window):
-        '''selected_window argument is used in decorator'''
+        '''NOTICE: selected_window argument is used in decorator'''
         def layout_window(window, xrandr, half_size_windows=[]):
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
@@ -107,7 +105,7 @@ class TileWindow(MaximizeWindow):
         else:
             return window.id
 
-    def _tile_windows(self, windows, xrandr, force_primary=False):
+    def _tile_windows(self, windows, xrandr, output=None):
         windows = sorted(windows, key=self._window_sort_key)
         ncols, nrows = configure.TILE_COUNTS[len(windows)]
         for col, row in itertools.product(reversed(range(ncols)),
@@ -121,26 +119,31 @@ class TileWindow(MaximizeWindow):
             height = 1 / nrows
 
             if ncols == 1 and nrows == 1:
-                self.maximize_window(window, xrandr, force_primary)
+                self.maximize_window(window, xrandr, output=output)
                 break
             elif not windows:
                 # the last window is stretched to fill the remaining area
                 rest_height = 1 / nrows * row
                 y -= rest_height
                 height += rest_height
-            window.configure(**xrandr.convert_geomtry(x, y, width, height, force_primary))
+            window.configure(**xrandr.convert_geomtry(x, y, width, height, output=output))
 
     @VscreenExapndBase.select_window_at_last
     def tile_all_windows(self, selected_window):
-        '''selected_window argument is used in decorator'''
+        '''NOTICE: selected_window argument is used in decorator'''
         xrandr = self.displaysize.create_xrandr_request()
         if xrandr.exist_expand_display:
             windows = sorted(self.managed_windows, key=self._window_sort_key)
-            n_windows_on_primary = int((len(windows) + 1) / 2)
-            # assume expand display is larger than primary one
-            windows_on_primary, windows_on_expand = windows[:n_windows_on_primary], windows[n_windows_on_primary:]
-            self._tile_windows(windows_on_primary, xrandr, force_primary=True)
-            self._tile_windows(windows_on_expand, xrandr, force_primary=False)
+
+            outputs = xrandr.outputs
+            # divide as equally as possible
+            split_window_counts = ((len(windows) + i) // len(outputs)
+                                   for i in range(len(outputs)))
+
+            last_windows = windows
+            for output, window_count in zip(outputs, split_window_counts):
+                self._tile_windows(last_windows[:window_count], xrandr, output=output)
+                last_windows = last_windows[window_count:]
         else:
             self._tile_windows(self.managed_windows, xrandr)
 
@@ -214,7 +217,7 @@ class PictureInPicture(VscreenExapndBase):
                                                   py=(1 - PictureInPicture.PHEIGHT),
                                                   pwidth=PictureInPicture.PWIDTH,
                                                   pheight=PictureInPicture.PHEIGHT,
-                                                  force_primary=True),
+                                                  window=window),
                          stack_mode=X.Above)
 
     def unmanage_pip_window(self):
