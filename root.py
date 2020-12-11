@@ -2,11 +2,11 @@
 
 from Xlib import display
 
-from .event_handler.event_handler import EventHandler
-from .vscreen.vscreen_manager import VScreenManager
-from .xwindow_component.frame_window import FrameWindow
-from .xwindow_component.pointer import Pointer
-from .xwindow_component.displaysize import DisplaySize
+from xpywm.event_handler.event_handler import EventHandler
+from xpywm.vscreen.vscreen_manager import VScreenManager
+from xpywm.xwindow_component.frame_window import FrameWindow
+from xpywm.xwindow_component.pointer import Pointer
+from xpywm.xwindow_component.displaysize import DisplaySize
 
 
 class WindowManager():

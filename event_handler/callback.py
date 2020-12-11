@@ -4,8 +4,8 @@ import os
 import subprocess
 import sys
 
-from ..util import external_command
-from ..util.log import error, debug
+from xpywm.util import external_command
+from xpywm.util.log import error, debug
 
 
 class Callback():

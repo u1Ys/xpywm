@@ -2,10 +2,10 @@
 
 from Xlib import X, XK
 
-from . import keysyms
-from . import callback
-from .. import configure
-from ..util.log import debug
+from xpywm import configure
+from xpywm.event_handler import keysyms
+from xpywm.event_handler import callback
+from xpywm.util.log import debug
 
 EVENT_HANDLER = {
     X.KeyPress: 'handle_keypress',

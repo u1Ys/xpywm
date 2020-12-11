@@ -4,8 +4,8 @@ import os
 import re
 import subprocess
 
-from .. import configure
-from . import window_property
+from xpywm import configure
+from xpywm.util import window_property
 
 STOP_CURSOR_CLS = r'rxvt|emacs'
 

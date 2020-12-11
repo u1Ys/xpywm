@@ -1,2 +1,2 @@
-from .root import WindowManager
-from .configure import show_keybindings as help
+from xpywm.root import WindowManager
+from xpywm.configure import show_keybindings as help

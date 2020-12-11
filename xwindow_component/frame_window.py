@@ -2,8 +2,8 @@
 
 from Xlib import X
 
-from .. import configure
-from ..util import window_property
+from xpywm import configure
+from xpywm.util import window_property
 
 
 class FrameWindow():

@@ -2,8 +2,8 @@
 
 import Xlib
 
-from .. import configure
-from ..util.log import debug
+from xpywm import configure
+from xpywm.util.log import debug
 
 
 class DisplaySize():

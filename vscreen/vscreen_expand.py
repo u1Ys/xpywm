@@ -5,10 +5,9 @@ import re
 
 from Xlib import X
 
-from .vscreen import Vscreen
-
-from .. import configure
-from ..util import window_property
+from xpywm import configure
+from xpywm.vscreen.vscreen import Vscreen
+from xpywm.util import window_property
 
 
 class VscreenExapndBase(Vscreen):

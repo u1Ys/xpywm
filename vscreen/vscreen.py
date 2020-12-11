@@ -3,8 +3,7 @@
 import Xlib
 from Xlib import X
 
-from ..util import external_command
-from ..util import window_property
+from xpywm.util import external_command, window_property
 
 
 class VscreenBase():
