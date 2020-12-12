@@ -166,7 +166,7 @@ KEY_HANDLER = {
     'F7': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto _max'},
     'F8': {'modifier': X.ShiftMask,
-           'os_command': 'xrandr-auto _max --right-of eDP-1'},
+           'os_command': 'xrandr-auto _max --left-of _primary'},
     'XF86Display': {'modifier': X.NONE,
                     'os_command': 'xrandr-toggle'},
     # os-command - music player
