@@ -13,7 +13,7 @@ class FrameWindow():
         self.framed_window = None
 
     def create_frame_windows(self):
-        """Create and map a window frame consisting of four windows."""
+        '''Create and map a window frame consisting of four windows.'''
         colormap = self.screen.default_colormap
         # create four frame windows
         pixel = colormap.alloc_named_color(configure.FRAME_COLOR).pixel
@@ -34,7 +34,7 @@ class FrameWindow():
 
     @window_property.return_with_get_geometry_exception
     def draw_frame_windows(self, framed_window):
-        """Draw a frame window surrounding a windwow WINDOW."""
+        '''Draw a frame window surrounding a windwow WINDOW.'''
         geom = framed_window.get_geometry()
         self.framed_window = framed_window
 

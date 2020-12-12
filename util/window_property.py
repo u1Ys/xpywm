@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import re
 import subprocess
 
@@ -10,13 +11,13 @@ BROWSER_WINDOW_REGEXP = r'chromium|chrome|firefox|vivaldi'
 
 
 def get_window_class(window):
-    """Fetch the WM_CLASS window property of the window WINDOW and return
+    '''Fetch the WM_CLASS window property of the window WINDOW and return
     the class part of the property.  Return empty string if class is not
-    retrieved."""
+    retrieved.'''
     try:
         cmd, cls = window.get_wm_class()
-    # TODO: explicit exception -u1 [2020/06/20]
-    except:
+    # TODO: should explicit exception
+    except Exception:
         return ''
     return cls if cls is not None else ''
 
@@ -34,7 +35,7 @@ def get_window_name(window):
 
 
 def is_terminal_window(window):
-    """Check if the window WINDOW seems to be a terminal emulator."""
+    '''Check if the window WINDOW seems to be a terminal emulator.'''
     cls = get_window_class(window)
     return 'xterm' in cls.lower()
 
@@ -56,5 +57,6 @@ def return_with_get_geometry_exception(method):
         try:
             method(self, *args, **kargs)
         except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
+            logging.exception('abort %s', method.__name__)
             return
     return wrapper

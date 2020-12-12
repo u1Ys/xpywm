@@ -3,12 +3,11 @@
 from .vscreen_expand import VscreenExpand
 
 from xpywm import configure
-from xpywm.util.log import debug
 
 
 class VScreenManager():
-    """Manage vscreen (virtual screeen). Also, move windows between
-vscreens."""
+    '''Manage vscreen (virtual screeen). Also, move windows between
+vscreens.'''
 
     def __init__(self, pointer, frame_window, displaysize):
         self.pointer = pointer
@@ -41,8 +40,7 @@ vscreens."""
 
     # ------------------------
     def select_vscreen(self, n):
-        """Change the virtual screen to N."""
-        debug(self, 'select_vscreen: %d', n)
+        '''Change the virtual screen to N.'''
         next_, last = self.vscreens[n], self.current_vscreen
         if next_ == last:
             return

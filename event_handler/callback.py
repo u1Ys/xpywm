@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import os
+import logging
 import subprocess
 import sys
 
 from xpywm.util import external_command
-from xpywm.util.log import error, debug
 
 
 class Callback():
@@ -28,7 +28,7 @@ class Callback():
         }[entry['type']]
         method = getattr(object_, entry['method'], None)
         if not method:
-            error(self, "unable to call '%s'", entry['method'])
+            logging.error("unable to call '%s'", entry['method'])
             return
         first_arg_window, args = entry.get('first_arg_window', False), entry.get('args', False)
         if args and type(args) is not tuple:
@@ -58,5 +58,5 @@ class Callback():
 
     def restart(self):
         self.vscreen_manager.all_window_move_init_vscreen()
-        debug('restarting %s...', sys.argv[0])
+        logging.info('restarting %s...', sys.argv[0])
         os.execvp(sys.argv[0], [sys.argv[0]])

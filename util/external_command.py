@@ -11,8 +11,8 @@ STOP_CURSOR_CLS = r'rxvt|emacs'
 
 
 def get_mixer_level():
-    """Return the master playback volume of the default ALSA audio device.
-    Volume ranges between 0 and 100."""
+    '''Return the master playback volume of the default ALSA audio device.
+    Volume ranges between 0 and 100.'''
     output = subprocess.getoutput('amixer get Master')
     m = re.search(r'Playback.*\[(\d+)%\]', output)
     if m:

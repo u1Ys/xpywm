@@ -215,3 +215,6 @@ KEY_HANDLER = {
 }
 
 KEY_HANDLER['d'] = KEY_HANDLER['i']
+
+
+LOG_FILE = '/var/tmp/xpywm.log'

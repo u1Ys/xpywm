@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import logging
+
 import Xlib
 
 from xpywm import configure
-from xpywm.util.log import debug
 
 
 class DisplaySize():
@@ -26,7 +27,7 @@ geom = xrandr.get_maximized_geometry()
 
     def create_xrandr_request(self):
         # This is because the xradnr_get_* will take some time.
-        debug(self, 'create_xrandr_request')
+        logging.info('')
         resources = self.screen.root.xrandr_get_screen_resources()
         timestamp = resources.timestamp
         # To reduce the number of xrandr_get_*, when the timestamp of
@@ -68,7 +69,7 @@ class _XrandrRequest():
 
         def get_crtcinfo(crtcid):
             try:
-                debug(self, f'xrandr_get_crtc_info {crtcid} {timestamp}')
+                logging.info(f'crtc {crtcid} timestamp {timestamp}')
                 crtcinfo = self.display.xrandr_get_crtc_info(crtcid, timestamp)._data
                 return crtcinfo
             except Xlib.error.XError:  # Xlib.error.XError -> output is not displayed, maybe
@@ -83,7 +84,7 @@ class _XrandrRequest():
             if crtcinfo['outputs'] == []:
                 return False
             outputid, timestamp = crtcinfo['outputs'][0], crtcinfo['timestamp']
-            debug(self, f'xrandr_get_output_info {outputid} {timestamp}')
+            logging.info(f'xrandr_get_output_info output {outputid} timestamp {timestamp}')
             outinfo = self.display.xrandr_get_output_info(outputid, timestamp)._data
             # connection: 0 -> connected, connection: 1 -> unconnected
             return outinfo['connection'] == 0

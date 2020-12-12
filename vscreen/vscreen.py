@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import logging
+
 import Xlib
 from Xlib import X
 
@@ -16,8 +18,10 @@ class VscreenBase():
 
 
 class Vscreen(VscreenBase):
-    """Manage windows within a single vscreen (virtual screen). Here, only
-basic functions are implemented."""
+    '''Manage windows within a single vscreen (virtual screen).  Here,
+    only basic functions are implemented.
+
+    '''
 
     def __init__(self, vscreen_number, frame_window, pointer):
         self.vscreen_number = vscreen_number
@@ -59,9 +63,9 @@ basic functions are implemented."""
 
     # ------------------------ basic operation
     def manage_window(self, window):
-        """The window WINDOW is put under the control of the window manager.
+        '''The window WINDOW is put under the control of the window manager.
         The window is forced to be mapped on the current virtual screen.  The
-        geometry of the window is unchnaged."""
+        geometry of the window is unchnaged.'''
         # skip if the window seems invalid
         try:
             attrs = window.get_attributes()
@@ -81,19 +85,19 @@ basic functions are implemented."""
 
     @VscreenBase.execute_when_window_is_managed
     def unmanage_window(self, window):
-        """The window WINDOW leaves from the control of the window manager."""
+        '''The window WINDOW leaves from the control of the window manager.'''
         self.managed_windows.remove(window)
 
     @VscreenBase.execute_when_window_is_managed
     def destroy_window(self, window):
-        """Kill the window WINDOW."""
+        '''Kill the window WINDOW.'''
         window.destroy()
         self.unmanage_window(window)
 
     @VscreenBase.execute_when_window_is_managed
     def activate_window(self, window):
-        """Activate the input to the window WINDOW and the window frame is
-        displayed."""
+        '''Activate the input to the window WINDOW and the window frame is
+        displayed.'''
         self.pointer.cursor_set(window)
         window.set_input_focus(X.RevertToParent, 0)
         self.frame_window.draw_frame_windows(window)
@@ -102,18 +106,18 @@ basic functions are implemented."""
 
     @VscreenBase.execute_when_window_is_managed
     def select_window(self, window):
-        """Change the active window to WINDOW.  The active window is raised
+        '''Change the active window to WINDOW.  The active window is raised
         and activated.  The pointer is moved to the window.
-        """
+        '''
         window.raise_window()
         self.pointer.move_to(window)
         self.activate_window(window)
 
     @window_property.return_with_get_geometry_exception
     def select_other_window(self, current_window=None, reverse=False):
-        """Change the active window from the window WINDOW to the next one.
+        '''Change the active window from the window WINDOW to the next one.
 
-        """
+        '''
         def _sort_key(window):
             geom = window.get_geometry()
             return geom.x * 10000 + geom.y
@@ -173,4 +177,5 @@ class WindowList(list):
             try:
                 window.get_geometry()
             except (Xlib.error.BadWindow, Xlib.error.BadDrawable):
+                logging.error('remove %s from managed windows', window)
                 self.remove(window)

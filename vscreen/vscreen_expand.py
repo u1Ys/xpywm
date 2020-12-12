@@ -18,10 +18,10 @@ class VscreenExapndBase(Vscreen):
 
     @staticmethod
     def select_window_at_last(method):
-        """Decorator to execute the METHOD and select the window after
+        '''Decorator to execute the METHOD and select the window after
         executing the METHOD.
 
-        """
+        '''
         def wrapper(self, window, *args, **kargs):
             method(self, window, *args, **kargs)
             self.select_window(window)
@@ -36,19 +36,19 @@ class MaximizeWindow(VscreenExapndBase):
 
     @Vscreen.execute_when_window_is_managed
     def maximize_window(self, window, xrandr, output=None):
-        """Resize the geometry of the window WINDOW to cover the screen
-        horizontally and/or vertically."""
+        '''Resize the geometry of the window WINDOW to cover the screen
+        horizontally and/or vertically.'''
         _specify_window = window if output is None else None
         window.configure(**xrandr.get_maximized_geometry(window=_specify_window,
                                                          output=output))
 
     def _is_maximized(self, window, geom, xrandr):
-        """Check if the window WINDOW seems to have been maximized."""
+        '''Check if the window WINDOW seems to have been maximized.'''
         return {'x': geom.x, 'y': geom.y, 'width': geom.width, 'height': geom.height} \
             == xrandr.get_maximized_geometry(window=window)
 
     def _save_window_geometry(self, window, geom):
-        """Save the current geometry of the window WINDOW."""
+        '''Save the current geometry of the window WINDOW.'''
         self.unmaximized_window_geometries[window] = {'x': geom.x, 'y': geom.y,
                                                       'width': geom.width, 'height': geom.height}
 

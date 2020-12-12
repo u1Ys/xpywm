@@ -32,7 +32,7 @@ class Pointer():
 
     # ------------------------
     def move(self, geometry):
-        """Move pointer to absoulute GEOMETRY"""
+        '''Move pointer to absoulute GEOMETRY'''
         current_geometry = self.current_geometry
         self.display.warp_pointer(geometry['x'] - current_geometry['x'],
                                   geometry['y'] - current_geometry['y'])
@@ -63,13 +63,13 @@ class Pointer():
 
     @window_property.return_with_get_geometry_exception
     def save_geometry_at(self, window, geom_abs):
-        """Save the relative geometry of the pointer in the window. Because
+        '''Save the relative geometry of the pointer in the window. Because
         the window size changes often, save the *relative* position of
         the pointer, not the absolute position. If the pointer is
         outside the window frame, it is considered invalid and is not
         saved.
 
-        """
+        '''
         def is_bound(lower, value, upper):
             return lower <= value and value <= upper
 

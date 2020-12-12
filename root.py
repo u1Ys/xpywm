@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import logging
+import sys
+
 from Xlib import display
 
 from xpywm.event_handler.event_handler import EventHandler
@@ -8,12 +11,15 @@ from xpywm.xwindow_component.frame_window import FrameWindow
 from xpywm.xwindow_component.pointer import Pointer
 from xpywm.xwindow_component.displaysize import DisplaySize
 
+# load log configure
+import xpywm.util.log  # noqa: F401
+
 
 class WindowManager():
-    """The *root* of all modules. Bridging objects between classes of
+    '''The *root* of all modules. Bridging objects between classes of
     different elements.
 
-    """
+    '''
 
     def __init__(self):
         self.display = display.Display()
@@ -42,4 +48,5 @@ class WindowManager():
                 self.vscreen_manager.current_vscreen.manage_window(child)
 
     def start(self):
+        logging.info('start %s', sys.argv[0])
         self.event_handler.event_loop()

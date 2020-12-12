@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import logging
 import sys
 
 from Xlib import X
@@ -34,8 +35,13 @@ def main():
     if sys.argv[1:]:
         show_keybindings()
         return
-    wm = xpywm.WindowManager()
-    wm.start()
+
+    try:
+        wm = xpywm.WindowManager()
+        wm.start()
+    except Exception as e:
+        logging.exception('window manager exit with exception')
+        raise e
 
 
 if __name__ == "__main__":
