@@ -2,12 +2,37 @@
 
 import sys
 
+from Xlib import X
+
 import xpywm
+
+
+def show_keybindings(key=None):
+    if key is None:
+        for key in xpywm.configure.KEY_HANDLER.keys():
+            _show_keybinding(key)
+    else:
+        _show_keybinding(key)
+
+
+def _show_keybinding(key):
+    keyconf = xpywm.configure.KEY_HANDLER.get(key, None)
+    if keyconf is None:
+        print(f'{key} is not binded')
+        return
+    modifiers = '+'.join([key for key, val in {
+        'Shift': X.ShiftMask,
+        'Alt': X.Mod1Mask,
+        'Ctrl': X.ControlMask
+    }.items() if keyconf['modifier'] & val])
+    callback_function = keyconf.get('method', False) or keyconf.get('os_command')
+    args = str(keyconf.get('args', ''))
+    print('\t'.join([modifiers, key, callback_function, args]))
 
 
 def main():
     if sys.argv[1:]:
-        xpywm.help()
+        show_keybindings()
         return
     wm = xpywm.WindowManager()
     wm.start()

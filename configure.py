@@ -4,37 +4,6 @@ import os
 
 from Xlib import X
 
-# TODO: load configure from user defined file
-# import sys
-# def _set_configure(attr, value):
-#     own = sys.modules[__name__]
-#     if getattr(own, attr):
-#         setattr(own, attr, value)
-
-
-def show_keybindings(key=None):
-    if key is None:
-        for key in KEY_HANDLER.keys():
-            _show_keybinding(key)
-    else:
-        _show_keybinding(key)
-
-
-def _show_keybinding(key):
-    keyconf = KEY_HANDLER.get(key, None)
-    if keyconf is None:
-        print(f'{key} is not binded')
-        return
-    modifiers = '+'.join([key for key, val in {
-        'Shift': X.ShiftMask,
-        'Alt': X.Mod1Mask,
-        'Ctrl': X.ControlMask
-    }.items() if keyconf['modifier'] & val])
-    callback_function = keyconf.get('method', False) or keyconf.get('os_command')
-    args = str(keyconf.get('args', ''))
-    print('\t'.join([modifiers, key, callback_function, args]))
-
-
 # ------------------------ default configure
 MAX_VSCREEN = 4
 FRAME_WIDTH = 2
