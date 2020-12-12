@@ -30,18 +30,18 @@ class Callback():
         if not method:
             logging.error("unable to call '%s'", entry['method'])
             return
-        first_arg_window, args = entry.get('first_arg_window', False), entry.get('args', False)
-        if args and type(args) is not tuple:
+
+        args = entry.get('args', ())
+        if type(args) is not tuple:
             # convert to tuple via list because arguments of tuple
             # must be iteratable
             args = tuple([args])
-        if first_arg_window:
+
+        if entry.get('first_arg_window', False):
             window = event.child
-            method(window, *args) if args \
-                else method(window)
+            method(window, *args)
         else:
-            method(*args) if args \
-                else method()
+            method(*args)
 
     # ------------------------
     def raise_emacs(self):
