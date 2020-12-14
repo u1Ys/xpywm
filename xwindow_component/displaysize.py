@@ -22,8 +22,7 @@ geom = xrandr.get_maximized_geometry()
         self.screen = screen
 
         self.primary_output = self.screen.root.xrandr_get_output_primary().output
-        self.last_crtcinfos = _XrandrRequest(self.display, self.screen,
-                                             self.primary_output).crtcinfos
+        self.last_crtcinfos = _XrandrRequest(self.display, self.screen,).crtcinfos
 
     def create_xrandr_request(self):
         # This is because the xradnr_get_* will take some time.
@@ -37,18 +36,16 @@ geom = xrandr.get_maximized_geometry()
         crtcinfos = None
         if timestamp == self.last_crtcinfos[0]['timestamp']:
             crtcinfos = self.last_crtcinfos
-        xradnr = _XrandrRequest(self.display, self.screen, self.primary_output,
-                                resources, crtcinfos)
-        self.last_crtcinfos = xradnr.crtcinfos
-        return xradnr
+        xradnr_request = _XrandrRequest(self.display, self.screen,
+                                        resources, crtcinfos)
+        self.last_crtcinfos = xradnr_request.crtcinfos
+        return _Xrandr(self.primary_output, xradnr_request.connected_crtcinfos)
 
 
 class _XrandrRequest():
-    def __init__(self, display, screen, primary_output, resources=None, crtcinfos=None):
+    def __init__(self, display, screen, resources=None, crtcinfos=None):
         self.display = display
         self.screen = screen
-
-        self.primary_output = primary_output
 
         # save crtcinfos for reuse it when the connection state changes
         if crtcinfos is None:
@@ -96,6 +93,12 @@ class _XrandrRequest():
             return outinfo['connection'] == 0
 
         return [crtcinfo for crtcinfo in crtcinfos if is_connected(crtcinfo)]
+
+
+class _Xrandr():
+    def __init__(self, primary_output, connected_crtcinfos):
+        self.primary_output = primary_output
+        self.connected_crtcinfos = connected_crtcinfos
 
     @property
     def exist_expand_display(self):
