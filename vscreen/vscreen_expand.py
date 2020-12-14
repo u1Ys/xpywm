@@ -132,7 +132,8 @@ class TileWindow(MaximizeWindow):
         '''NOTICE: selected_window argument is used in decorator'''
         xrandr = self.displaysize.create_xrandr_request()
         if xrandr.exist_expand_display:
-            windows = sorted(self.managed_windows, key=self._window_sort_key)
+            windows = sorted(self.managed_windows, key=self._window_sort_key,
+                             reverse=True)
 
             outputs = xrandr.outputs
             # divide as equally as possible

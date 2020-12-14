@@ -59,8 +59,14 @@ class _XrandrRequest():
         # timestamp does not change even if the display connection is
         # changed
         connected_crtcinfos = self._get_connected(self.crtcinfos)
-        self.connected_crtcinfos = {crtcinfos['outputs'][0]: crtcinfos
-                                    for crtcinfos in connected_crtcinfos}
+        self.connected_crtcinfos = self._create_crtcinfo_dict(connected_crtcinfos)
+
+    def _create_crtcinfo_dict(self, crtcinfos):
+        '''Sort crtcinfo as external -> ... -> primary'''
+        crtcinfo_dict = {}
+        for crtcinfo in reversed(crtcinfos):
+            crtcinfo_dict[crtcinfo['outputs'][0]] = crtcinfo
+        return crtcinfo_dict
 
     def _get_crtcinfos(self, resources=None):
         if resources is None:
@@ -102,11 +108,7 @@ class _XrandrRequest():
 
     @property
     def default_output(self):
-        # crtcinfos is sorted as primary -> ... -> external
-        #
-        # WARNING: correctly work with three or more outputs depends
-        # on the order
-        return list(self.outputs)[-1]
+        return list(self.outputs)[0]
 
     def get_maximized_geometry(self, output=None, window=None):
         output = self._specify_output(output, window)
