@@ -67,17 +67,20 @@ screen, and each terminal will have the quarter of the screen.
 
 None
 
+# REQUIREMENTS
+
+[pyhton-xlib](https://pypi.org/project/python-xlib/)
+
 # INSTALLATION
 
-1. Put `xpywm` directory to one of python module path (`python3 -c
-   "import sys; print(sys.path)"`)
-2. Put (or link) `bin/xpywm` in executable path (`echo $PATH`)
+1. Put `xpywm` directory to one of python module path (show `python3
+   -c "import sys; print(sys.path)"`)
+2. Put (or link) `bin/xpywm` in executable path (show `echo $PATH`)
 
 # UNINSTALLATION
 
-1. Remove `xpywm` directory on python module path (`python3 -c "import
-   sys; print(sys.path)"`)
-2. Remove (or unlink) `bin/xpywm` in executable path (`echo $PATH`)
+1. Remove `xpywm` directory where you put
+2. Remove (or unlink) `bin/xpywm` where you put
 
 # ~CUSTOMIZATION~
 
