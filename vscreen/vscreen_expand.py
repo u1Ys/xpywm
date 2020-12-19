@@ -6,11 +6,11 @@ import re
 from Xlib import X
 
 from xpywm import configure
-from xpywm.vscreen.vscreen import Vscreen
+from xpywm.vscreen.vscreen import VScreen
 from xpywm.util import window_property
 
 
-class VscreenExapndBase(Vscreen):
+class VScreenExapndBase(VScreen):
     def __init__(self, displaysize, *args):
         super().__init__(*args)
 
@@ -28,13 +28,13 @@ class VscreenExapndBase(Vscreen):
         return wrapper
 
 
-class MaximizeWindow(VscreenExapndBase):
+class MaximizeWindow(VScreenExapndBase):
     def __init__(self, *args):
         super().__init__(*args)
 
         self.unmaximized_window_geometries = {}
 
-    @Vscreen.execute_when_window_is_managed
+    @VScreen.execute_when_window_is_managed
     def maximize_window(self, window, xrandr, output=None):
         '''Resize the geometry of the window WINDOW to cover the screen
         horizontally and/or vertically.'''
@@ -52,9 +52,9 @@ class MaximizeWindow(VscreenExapndBase):
         self.unmaximized_window_geometries[window] = {'x': geom.x, 'y': geom.y,
                                                       'width': geom.width, 'height': geom.height}
 
-    @Vscreen.execute_when_window_is_managed
+    @VScreen.execute_when_window_is_managed
     @window_property.return_with_get_geometry_exception
-    @VscreenExapndBase.select_window_at_last
+    @VScreenExapndBase.select_window_at_last
     def toggle_maximize_window(self, window):
         geom = window.get_geometry()
         xrandr = self.displaysize.create_xrandr_request()
@@ -67,8 +67,8 @@ class MaximizeWindow(VscreenExapndBase):
             self.maximize_window(window, xrandr)
 
 
-class LayoutWindow(VscreenExapndBase):
-    @VscreenExapndBase.select_window_at_last
+class LayoutWindow(VScreenExapndBase):
+    @VScreenExapndBase.select_window_at_last
     def layout_all_windows(self, selected_window):
         '''NOTICE: selected_window argument is used in decorator'''
         def layout_window(window, xrandr, half_size_windows=[]):
@@ -127,7 +127,7 @@ class TileWindow(MaximizeWindow):
                 height += rest_height
             window.configure(**xrandr.convert_geomtry(x, y, width, height, output=output))
 
-    @VscreenExapndBase.select_window_at_last
+    @VScreenExapndBase.select_window_at_last
     def tile_all_windows(self, selected_window):
         '''NOTICE: selected_window argument is used in decorator'''
         xrandr = self.displaysize.create_xrandr_request()
@@ -148,7 +148,7 @@ class TileWindow(MaximizeWindow):
             self._tile_windows(self.managed_windows, xrandr)
 
 
-class HorizontalSplitWindow(VscreenExapndBase):
+class HorizontalSplitWindow(VScreenExapndBase):
     def __init__(self, *args):
         super().__init__(*args)
 
@@ -169,7 +169,7 @@ class HorizontalSplitWindow(VscreenExapndBase):
         [window.raise_window() for window in windows]
 
 
-class PictureInPicture(VscreenExapndBase):
+class PictureInPicture(VScreenExapndBase):
     PWIDTH = .25
     PHEIGHT = .25
 
@@ -238,7 +238,7 @@ class PictureInPicture(VscreenExapndBase):
             self.unmanage_pip_window()
 
 
-class VscreenExpand(HorizontalSplitWindow,
+class VScreenExpand(HorizontalSplitWindow,
                     TileWindow,
                     LayoutWindow,
                     MaximizeWindow,

@@ -9,12 +9,14 @@ from xpywm import configure
 
 class DisplaySize():
     '''If you want to get screen_size...
-# 1. create DisplaySize instance
-displaysize = DisplaySize()
-# 2. create _XrandrRequest instance for each get timing
-xrandr = displaysize.create_xrandr_request()
-# 3. request
-geom = xrandr.get_maximized_geometry()
+
+    # 1. create DisplaySize instance
+    displaysize = DisplaySize()
+    # 2. create _XrandrRequest instance for each get timing
+    xrandr = displaysize.create_xrandr_request()
+    # 3. request
+    geom = xrandr.get_maximized_geometry()
+
     '''
 
     def __init__(self, display, screen):

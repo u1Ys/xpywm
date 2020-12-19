@@ -13,7 +13,9 @@ BROWSER_WINDOW_REGEXP = r'chromium|chrome|firefox|vivaldi'
 def get_window_class(window):
     '''Fetch the WM_CLASS window property of the window WINDOW and return
     the class part of the property.  Return empty string if class is not
-    retrieved.'''
+    retrieved.
+
+    '''
     try:
         cmd, cls = window.get_wm_class()
     # TODO: should explicit exception

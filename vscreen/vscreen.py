@@ -8,7 +8,7 @@ from Xlib import X
 from xpywm.util import external_command, window_property
 
 
-class VscreenBase():
+class VScreenBase():
     @staticmethod
     def execute_when_window_is_managed(method):
         def wrapper(self, window, *args, **kargs):
@@ -17,7 +17,7 @@ class VscreenBase():
         return wrapper
 
 
-class Vscreen(VscreenBase):
+class VScreen(VScreenBase):
     '''Manage windows within a single vscreen (virtual screen).  Here,
     only basic functions are implemented.
 
@@ -83,18 +83,18 @@ class Vscreen(VscreenBase):
 
         return True
 
-    @VscreenBase.execute_when_window_is_managed
+    @VScreenBase.execute_when_window_is_managed
     def unmanage_window(self, window):
         '''The window WINDOW leaves from the control of the window manager.'''
         self.managed_windows.remove(window)
 
-    @VscreenBase.execute_when_window_is_managed
+    @VScreenBase.execute_when_window_is_managed
     def destroy_window(self, window):
         '''Kill the window WINDOW.'''
         window.destroy()
         self.unmanage_window(window)
 
-    @VscreenBase.execute_when_window_is_managed
+    @VScreenBase.execute_when_window_is_managed
     def activate_window(self, window):
         '''Activate the input to the window WINDOW and the window frame is
         displayed.'''
@@ -104,7 +104,7 @@ class Vscreen(VscreenBase):
         # move the current window to last of managed_windows
         self.managed_windows.move_to_end(window)
 
-    @VscreenBase.execute_when_window_is_managed
+    @VScreenBase.execute_when_window_is_managed
     def select_window(self, window):
         '''Change the active window to WINDOW.  The active window is raised
         and activated.  The pointer is moved to the window.

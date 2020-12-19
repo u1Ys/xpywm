@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from .vscreen_expand import VscreenExpand
+from .vscreen_expand import VScreenExpand
 
 from xpywm import configure
 
@@ -14,7 +14,7 @@ vscreens.'''
         self.frame_window = frame_window
 
         # create vscreens
-        self.vscreens = {i: VscreenExpand(displaysize, i, self.frame_window, self.pointer)
+        self.vscreens = {i: VScreenExpand(displaysize, i, self.frame_window, self.pointer)
                          for i in range(1, configure.MAX_VSCREEN + 1)}
 
         self.current_vscreen = self.vscreens[1]
