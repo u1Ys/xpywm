@@ -71,26 +71,16 @@ class LayoutWindow(VScreenExapndBase):
     @VScreenExapndBase.select_window_at_last
     def layout_all_windows(self, selected_window):
         '''NOTICE: selected_window argument is used in decorator'''
-        def layout_window(window, xrandr, half_size_windows=[]):
+        def layout_window(window, xrandr):
             for regexp, geom in configure.LAYOUT_RULES.items():
                 geom = [*geom]
                 if re.search(regexp, window_property.get_window_class(window).lower(),
                              flags=re.IGNORECASE):
-                    if window in half_size_windows:
-                        i = half_size_windows.index(window)
-                        # 0, 1, 2, 3 = x, y, w, h
-                        geom[3] *= 1 / 2
-                        # switch window position between upper and lower half
-                        geom[1] += (i + 1) % 2 * geom[3]
                     window.configure(**xrandr.convert_geomtry(*geom))
 
         xrandr = self.displaysize.create_xrandr_request()
-        half_size_windows = [window for window in self.managed_windows
-                             if window_property.is_browser_window(window)]
-        if len(half_size_windows) <= 1:
-            half_size_windows = []
         for window in self.managed_windows:
-            layout_window(window, xrandr, half_size_windows=half_size_windows)
+            layout_window(window, xrandr)
 
 
 class TileWindow(MaximizeWindow):
