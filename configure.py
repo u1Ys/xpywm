@@ -5,7 +5,7 @@ import os
 from Xlib import X
 
 # ------------------------ default configure
-MAX_VSCREEN = 4
+MAX_VSCREEN = 2
 FRAME_WIDTH = 2
 FRAME_COLOR = os.environ.get('THEME_COLOR', 'aquamarine1')
 Y_OFFSET = 8
@@ -13,7 +13,7 @@ Y_OFFSET = 8
 VSCREEN_FILE = '/tmp/wm_vscreen_num'
 
 TRANSSET_ALPHA = '.85'
-INTRANSSET_CLS = r'emacs|mupdf|mplayer'
+INTRANSSET_CLS = r'emacs|mupdf|mplayer|code'
 
 POINTER_OFFSET = 16
 DEFAULT_POINTER_GEOMETRY = {'x': 1, 'y': 0}
@@ -106,37 +106,13 @@ KEY_HANDLER = {
             'method': 'toggle_pip_window',
             'first_arg_window': True},
     # vsceen manage
-    'F1': {'modifier': X.Mod1Mask,
-           'type': 'vscreen_manager',
-           'method': 'select_vscreen', 'args': 1},
-    'F2': {'modifier': X.Mod1Mask,
-           'type': 'vscreen_manager',
-           'method': 'select_vscreen', 'args': 2},
-    'F3': {'modifier': X.Mod1Mask,
-           'type': 'vscreen_manager',
-           'method': 'select_vscreen', 'args': 3},
-    'F4': {'modifier': X.Mod1Mask,
-           'type': 'vscreen_manager',
-           'method': 'select_vscreen', 'args': 4},
     'x': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen_manager',
           'method': 'select_last_vscreen'},
-    'q': {'modifier': X.Mod1Mask | X.ControlMask,
-          'type': 'vscreen_manager',
-          'method': 'move_window_another_vscreen',
-          'first_arg_window': True, 'args': 1},
     'w': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen_manager',
-          'method': 'move_window_another_vscreen',
-          'first_arg_window': True, 'args': 2},
-    'e': {'modifier': X.Mod1Mask | X.ControlMask,
-          'type': 'vscreen_manager',
-          'method': 'move_window_another_vscreen',
-          'first_arg_window': True, 'args': 3},
-    'r': {'modifier': X.Mod1Mask | X.ControlMask,
-          'type': 'vscreen_manager',
-          'method': 'move_window_another_vscreen',
-          'first_arg_window': True, 'args': 4},
+          'method': 'toggle_window_vscreen',
+          'first_arg_window': True},
     't': {'modifier': X.Mod1Mask | X.ControlMask,
           'type': 'vscreen_manager',
           'method': 'all_window_move_init_vscreen'},
@@ -152,15 +128,13 @@ KEY_HANDLER = {
           'os_command': '(unset STY; rxvt-unicode)'},
     '3': {'modifier': X.Mod1Mask | X.ControlMask,
           'os_command': 'google-chrome'},
+    '9': {'modifier': X.Mod1Mask | X.ControlMask,
+          'os_command': 'xfsearch'},
     '0': {'modifier': X.Mod1Mask | X.ControlMask,
           'os_command': '{}/bin/init/recall-xutils'.format(os.getenv('HOME', ''))},
     # os-command - screenshot
     'F5': {'modifier': X.ShiftMask,
-           'type': 'callback',
-           # 'method': 'screenshot'},
-           'method': 'cb_screenshot',
-           'first_arg_window': True},
-    # os-command - xrandr
+           'os_command': 'pyscreenshot'},
     'F6': {'modifier': X.ShiftMask,
            'os_command': 'xrandr-auto --mode 800x600'},
     'F7': {'modifier': X.ShiftMask,

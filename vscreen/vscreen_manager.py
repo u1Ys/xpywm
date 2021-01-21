@@ -63,6 +63,11 @@ vscreens.'''
         if last == self.current_vscreen:
             window.unmap()
 
+    def toggle_window_vscreen(self, window):
+        last = self.is_vscreen_of(window)
+        self.move_window_another_vscreen(window,
+                                         2 if last is self.vscreens[1] else 1)
+
     def pull_class_window(self, window_class):
         window = self.find_managed_class_window(window_class)
         if not window:
