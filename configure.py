@@ -10,8 +10,6 @@ FRAME_WIDTH = 2
 FRAME_COLOR = os.environ.get('THEME_COLOR', 'aquamarine1')
 Y_OFFSET = 8
 
-VSCREEN_FILE = '/tmp/wm_vscreen_num'
-
 TRANSSET_ALPHA = '.85'
 INTRANSSET_CLS = r'emacs|mupdf|mplayer|code'
 
