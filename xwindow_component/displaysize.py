@@ -119,10 +119,12 @@ class _Xrandr():
         output = self._specify_output(output, window)
 
         crtcinfo = self.connected_crtcinfos[output]
-        exist_xpymon = not self.exist_expand_display \
-            or output == self.primary_output
 
         x = crtcinfo['x']
+
+        exist_xpymon = not self.exist_expand_display \
+            or x == 0
+
         y = configure.Y_OFFSET if exist_xpymon else 0
 
         width, height = crtcinfo['width'], crtcinfo['height']
